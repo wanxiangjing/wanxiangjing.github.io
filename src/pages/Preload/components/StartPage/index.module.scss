@@ -1,0 +1,113 @@
+.startPageContainer {
+    position: relative;
+    ;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-image: linear-gradient(to bottom, #1e3a8a, #3730a3, #581c87);
+
+    .mainContent {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .logo {
+            width: 8rem;
+            height: 8rem;
+            margin-bottom: 2rem;
+            animation: floatUpDown 3.5s ease-in-out infinite;
+        }
+
+        .title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        .desc {
+            font-size: 0.9rem;
+            font-weight: 300;
+            color: #fff;
+        }
+
+        @keyframes floatUpDown {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-25px);
+            }
+        }
+
+    }
+
+    .enterButtonWrap {
+        height: 160px;
+        display: flex;
+        justify-content: center;
+
+        button {
+            position: relative;
+            width: 18rem;
+            height: 3rem;
+            letter-spacing: 2px;
+            transition: all 0.3s ease-in-out;
+
+
+            .rightIcon {
+                position: absolute;
+                top: 50%;
+                right: 1rem;
+                font-weight: bold;
+                transform: translateY(-50%);
+            }
+            &:hover{
+                width: 20rem;
+                height: 3.6rem;
+            }
+        }
+    }
+
+    .id11ske {
+        position: absolute;
+        top: 40px;
+        left: 40px;
+        width: 80px;
+        height: 80px;
+        background-color: #9333ea;
+        border-radius: 50%;
+        opacity: 0.2;
+        filter: blur(20px);
+    }
+
+    .idEkm31 {
+        position: absolute;
+        bottom: 80px;
+        right: 40px;
+        width: 128px;
+        height: 128px;
+        background-color: #3b82f6;
+        border-radius: 50%;
+        opacity: 0.2;
+        filter: blur(20px);
+    }
+
+    .idTgbz2 {
+        position: absolute;
+        top: 33.33%;
+        right: 25%;
+        width: 64px;
+        height: 64px;
+        background-color: #ffdd59;
+        border-radius: 50%;
+        opacity: 0.2;
+        filter: blur(20px);
+    }
+}

@@ -1,0 +1,217 @@
+.loginPage {
+    height: 100%;
+
+    .loginContainer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        background: linear-gradient(to bottom, #111827, #1f2937);
+        display: flex;
+        flex-direction: column;
+
+        .topNav {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.1);
+
+            .navContent {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .backButton {
+                    margin-left: 4vw;
+                    color: rgba(255, 255, 255, 0.8);
+                    transition: color 0.2s;
+
+                    &:hover {
+                        color: white;
+                    }
+
+                    .icon {
+                        margin-right: 0.25rem;
+                    }
+                }
+
+                .title {
+                    font-size: 1.2rem;
+                    font-weight: bold;
+                    color: white;
+                    letter-spacing: 0.1em;
+                }
+
+                .placeholder {
+                    width: 2.5rem;
+                }
+            }
+        }
+
+        .formContainer {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 92vw;
+            margin-left: 4vw;
+
+
+            .formWrapper {
+                .header {
+                    margin-bottom: 2.5rem;
+                    text-align: center;
+
+                    .iconContainer {
+                        width: 4rem;
+                        height: 4rem;
+                        margin-left: auto;
+                        margin-right: auto;
+                        margin-bottom: 1rem;
+                        background-color: rgba(59, 130, 246, 0.2);
+                        border-radius: 9999px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        .userIcon {
+                            color: #3b82f6;
+                            font-size: 1.875rem;
+                        }
+                    }
+
+                    .welcomeText {
+                        font-size: 1.5rem;
+                        font-weight: bold;
+                        color: white;
+                        margin-bottom: 0.25rem;
+                    }
+
+                    .subText {
+                        color: #9ca3af;
+                    }
+                }
+
+                .loginForm {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 1rem;
+                    margin-bottom: 2rem;
+
+
+                    .inputGroup {
+                        position: relative;
+                        width: 92vw;
+
+
+                        .inputIcon {
+                            position: absolute;
+                            top: 0;
+                            bottom: 0;
+                            left: 0;
+                            display: flex;
+                            align-items: center;
+                            padding-left: 1rem;
+                            pointer-events: none;
+                            color: #9ca3af;
+                        }
+                        .passwordToggle {
+                            position: absolute;
+                            top: 0;
+                            bottom: 0;
+                            right: 0;
+                            display: flex;
+                            align-items: center;
+                            padding-right: 1rem;
+                            color: #9ca3af;
+                        }
+
+                        .inputField {
+                            width: 92vw;
+                            padding-left: 3rem;
+                            padding-right: 1rem;
+                            padding-top: 0.75rem;
+                            padding-bottom: 0.75rem;
+                            box-sizing: border-box;
+                            background-color: rgba(31, 41, 55, 0.5);
+                            border: 1px solid #374151;
+                            border-radius: 0.5rem;
+                            color: white;
+                            outline: none;
+
+                            &::placeholder {
+                                color: #6b7280;
+                            }
+
+                            &:focus {
+                                border-color: transparent;
+                                box-shadow: 0 0 0 2px #3b82f6;
+                            }
+                        }
+
+                        .verificationButton {
+                            position: absolute;
+                            top: 0;
+                            bottom: 0;
+                            right: 0;
+                            display: flex;
+                            align-items: center;
+                            padding-right: 1rem;
+                            color: #3b82f6;
+                            transition: color 0.2s;
+
+                            &:hover {
+                                color: #1e40af;
+                            }
+                        }
+                    }
+
+                    .loginButton {
+                        width: 100%;
+                        padding-top: 0.75rem;
+                        padding-bottom: 0.75rem;
+                        // background-color: #3b82f6;
+                        border-radius: 0.5rem;
+                        // color: white;
+                        font-weight: 500;
+                        transition: all 0.2s;
+                    }
+                }
+
+                .otherLogin {
+                    text-align: center;
+
+                    .otherLoginText {
+                        color: #6b7280;
+                        font-size: 0.875rem;
+                        margin-bottom: 1rem;
+                    }
+
+                    .wechatButton {
+                        width: 100%;
+                        padding-top: 0.75rem;
+                        padding-bottom: 0.75rem;
+                        background-color: #07c160;
+                        border-radius: 0.5rem;
+                        color: white;
+                        font-weight: 500;
+                        transition: all 0.2s;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        border: none;
+
+                        &:hover {
+                            background-color: #06b356;
+                        }
+
+                        .wechatIcon {
+                            margin-right: 0.5rem;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
