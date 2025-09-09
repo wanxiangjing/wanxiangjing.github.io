@@ -30,12 +30,17 @@ export const UserSlice = createSlice({
                 state.token = payload.token;
             }
         },
+        updateLoginStatus: (state, { payload }) => {
+            if (payload.isLogin) {
+                state.isLogin = payload.isLogin;
+            }
+        },
         clearUser: (state) => {
             state.user = {};
             state.token = '';
         }
     },
 });
-export const { updateUser, updateToken, clearUser } = UserSlice.actions;
+export const { updateUser, updateToken, clearUser, updateLoginStatus } = UserSlice.actions;
 
 export default UserSlice.reducer;

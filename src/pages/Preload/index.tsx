@@ -52,12 +52,6 @@ const Preload = () => {
 
     }
 
-    useEffect(() => {
-        // loadAd();
-        // initPreload();
-        console.log(123);
-    }, []);
-
     return (
         <div>
             {

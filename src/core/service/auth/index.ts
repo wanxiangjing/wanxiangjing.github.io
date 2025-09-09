@@ -1,20 +1,33 @@
-import { apiUserLogin, apiUserRegister } from "@/api/auth";
+import { apiRefreshToken, apiUserInfo, apiUserLogin, apiUserRegister } from "@/api/auth";
 import store from "@/store";
-import { updateUser } from "@/store/slices/user";
-import { ILoginResult, IRegisterParams } from "@/types/auth";
+import { updateLoginStatus, updateUser } from "@/store/slices/user";
+import { ILoginParams, ILoginResult, IRegisterParams } from "@/types/auth";
+import { isNotEmpty } from "@/utils/utils";
 
 // 前端代码示例
 class AuthClient {
-    accessToken: string | null;
-    refreshToken: string | null;
+    private accessToken: string | null;
+    private refreshToken: string | null;
     constructor() {
         this.accessToken = null;
         this.refreshToken = localStorage.getItem('refreshToken');
+        if (this.refreshToken) {
+            this.refreshAccessToken().then(() => {
+                this.getUserInfo().then((res) => {
+                    store.dispatch(updateUser(res));
+                });
+            });
+        }
+    }
+
+    async getUserInfo() {
+        const res = await apiUserInfo();
+        return res;
     }
 
     // 登录
-    async login(email: string, password: string) {
-        const res = await apiUserLogin({ identifier: email, password });
+    async login(params: ILoginParams) {
+        const res = await apiUserLogin(params);
         return this.afterLogin(res);
     }
 
@@ -26,26 +39,33 @@ class AuthClient {
 
     private afterLogin(res: ILoginResult) {
         this.accessToken = res.access_token;
+        this.refreshToken = res.refresh_token;
         localStorage.setItem('refreshToken', res.refresh_token);
         store.dispatch(updateUser(res.user));
+        store.dispatch(updateLoginStatus({ isLogin: true }));
         return res;
     }
 
     // 刷新Access Token
     async refreshAccessToken() {
-        const response = await fetch('/auth/refresh', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refresh_token: this.refreshToken })
-        });
-
-        if (!response.ok) {
-            // 刷新token也失败，需要重新登录
-            this.logout();
-            throw new Error('请重新登录');
+        if (!this.refreshToken) {
+            throw new Error('No refresh token available');
         }
+        const res = await apiRefreshToken(this.refreshToken);
+        this.accessToken = res.access_token;
+        return res.access_token;
+    }
 
-        return response.json();
+    getAccessToken() {
+        return this.accessToken;
+    }
+
+    getRefreshToken() {
+        return this.refreshToken;
+    }
+
+    getIsLogin() {
+        return this.refreshToken !== null && isNotEmpty(this.refreshToken);
     }
 
     logout() {

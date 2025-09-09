@@ -1,9 +1,11 @@
 import logo from '@/assets/img/logo.png';
 import { Avatar, Button, Toast } from 'antd-mobile';
 import { EyeFill, EyeInvisibleFill, LeftOutline, LockOutline, UserOutline } from 'antd-mobile-icons';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './index.module.scss';
 import { isEmail, isPassword } from '@/utils/utils';
+import { authClient } from '@/core/service/auth';
+import { useNavigate } from 'react-router';
 
 const LoginPage = () => {
     const [account, setAccount] = useState({
@@ -11,8 +13,8 @@ const LoginPage = () => {
         password: '',
         verifyCode: ''
     });
-
     const [passwordVisible, setPasswordVisible] = useState(false);
+    const navigate = useNavigate();
 
     const togglePasswordVisibility = () => {
         setPasswordVisible(!passwordVisible);
@@ -22,7 +24,6 @@ const LoginPage = () => {
         const { name, value } = e.target;
         setAccount({
             ...account,
-
             [name]: value
         });
     }
@@ -44,8 +45,27 @@ const LoginPage = () => {
             });
             return;
         }
-
+        authClient.login({
+            identifier: account.email,
+            password: account.password
+        }).then(res => {
+            if (res) {
+                Toast.show({
+                    icon: 'success',
+                    content: '登录成功',
+                    duration: 1000,
+                });
+                navigate('/');
+            }
+        })
     }
+
+    // 如果已经登录，跳转到首页
+    useEffect(() => {
+        if (authClient.getRefreshToken()) {
+            navigate('/');
+        }
+    }, [navigate])
 
     return (
         <div className={styles.loginPage} id="login-page">

@@ -1,0 +1,180 @@
+// index.module.scss
+.container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 40;
+    background: linear-gradient(to bottom, #1e3a8a, #3730a3, #6b21a8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    transition: opacity 0.5s;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15vh;
+}
+
+.title {
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: bold;
+    color: white;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.phone {
+    position: relative;
+    width: 10rem;
+    height: 18rem;
+    border: 4px solid white;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    background-color: #1f2937;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    margin-bottom: 2.5rem;
+}
+
+.phoneScreen {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #111827;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    gap: 2rem;
+}
+
+.permissionIconWrapper {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background-color: #374151;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // 颜色变化过度
+    transition: background-color 0.5s ease;
+
+    .icon {
+        color: #9ca3af;
+        font-size: 1.8rem;
+    }
+
+    .okIcon {
+        color: #fff;
+        font-size: 2rem;
+        font-weight: bolder;
+    }
+}
+
+.connector {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 5px;
+    width: 0;
+    border-radius: 2.5px;
+    background-color: #6b7280;
+    transition: width 0.5s ease;
+}
+
+.phoneButton1 {
+    position: absolute;
+    right: -3px;
+    top: 25%;
+    width: 3px;
+    height: 2.5rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 9999px;
+}
+
+.phoneButton2 {
+    position: absolute;
+    right: -3px;
+    top: 50%;
+    width: 3px;
+    height: 4rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 9999px;
+}
+
+.description {
+    text-align: center;
+    color: #dbeafe;
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    max-width: 20rem;
+}
+
+.note {
+    font-size: 0.75rem;
+    color: rgba(191, 219, 254, 0.7);
+    text-align: center;
+    max-width: 20rem;
+}
+
+.buttonContainer {
+    width: 100%;
+    margin-bottom: 4rem;
+}
+
+.permissionButton {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 9999px;
+    font-size: 1.125rem;
+    font-weight: 500;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s;
+    transform: scale(1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #1e40af;
+        transform: scale(1.05);
+    }
+}
+
+.backgroundElement1 {
+    position: absolute;
+    top: 2.5rem;
+    right: 2.5rem;
+    width: 5rem;
+    height: 5rem;
+    background-color: #9333ea;
+    border-radius: 50%;
+    opacity: 0.2;
+    filter: blur(20px);
+}
+
+.backgroundElement2 {
+    position: absolute;
+    bottom: 5rem;
+    left: 2.5rem;
+    width: 8rem;
+    height: 8rem;
+    background-color: #3b82f6;
+    border-radius: 50%;
+    opacity: 0.2;
+    filter: blur(20px);
+}

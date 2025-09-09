@@ -1,19 +1,23 @@
-import { Button } from 'antd-mobile'
-import styles from './index.module.scss'
 import logoImg from '@/assets/img/logo.png'
+import { authClient } from '@/core/service/auth'
+import { Button } from 'antd-mobile'
 import { RightOutline } from 'antd-mobile-icons'
-import { useNavigate } from 'react-router'
-import { RootState } from '@/store'
-import { useSelector } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router'
+import styles from './index.module.scss'
+import { useDispatch } from 'react-redux'
+import { updateHasPreload } from '@/store/slices/global'
 
 const StartPage = () => {
     const navigate = useNavigate();
-    const { isLogin } = useSelector((state: RootState) => state.user);
+    const dispatch = useDispatch()
+    // 从url参数中获取redirect
+    const redirect = useLocation().search.split('redirect=')[1]
     const handleClick = () => {
-        if (isLogin) {
-            navigate('/');
+        dispatch(updateHasPreload(true))
+        if (authClient.getIsLogin()) {
+            navigate(redirect || '/');
         } else {
-            navigate('/login');
+            navigate(`/login?redirect=${redirect || '/'}`);
         }
     }
 

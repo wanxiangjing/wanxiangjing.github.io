@@ -3,17 +3,11 @@
  * SPDX-license-identifier: BSD-3-Clause
  */
 
-import { memo } from 'react';
 import { useDeviceState, useLeave, useScene } from '@/core/lib/useCommon';
 import { isMobile } from '@/utils/utils';
+import { memo } from 'react';
 import style from './index.module.scss';
-import CameraOpenSVG from '@/assets/img/CameraOpen.svg';
-import CameraCloseSVG from '@/assets/img/CameraClose.svg';
-import MicOpenSVG from '@/assets/img/MicOpen.svg';
-import MicCloseSVG from '@/assets/img/MicClose.svg';
-import LeaveRoomSVG from '@/assets/img/LeaveRoom.svg';
-import ScreenOnSVG from '@/assets/img/ScreenOn.svg';
-import ScreenOffSVG from '@/assets/img/ScreenOff.svg';
+import { AudioFill, AudioMutedOutline } from 'antd-mobile-icons';
 
 function ToolBar(props: React.HTMLAttributes<HTMLDivElement>) {
   const { className, ...rest } = props;
@@ -29,37 +23,29 @@ function ToolBar(props: React.HTMLAttributes<HTMLDivElement>) {
   } = useDeviceState();
 
   return (
-    <div className={`${className} ${style.btns} ${isMobile() ? style.column : ''}`} {...rest}>
-      <img
-        src={isAudioPublished ? MicOpenSVG : MicCloseSVG}
+    <div className={style.roomToolBar} >
+      
+      <div
         onClick={() => switchMic(true)}
-        className={style.btn}
-        alt="mic"
-      />
-      {!isVision ? null : isScreenMode && !isMobile() ? (
-        <img
-          src={isScreenPublished ? 'new-screen-off.svg' : 'new-screen-on.svg'}
-          onClick={() => switchScreenCapture()}
-          className={style.btn}
-          alt="screenShare"
-        />
-      ) : (
-        <img
+        className={ isAudioPublished ? style.audioBtnActive : style.audioBtn}
+      >
+      {isAudioPublished ? <AudioFill fontSize={36} color={isAudioPublished ? '#fff' : '#eee'} /> : <AudioMutedOutline  fontSize={36} color={isAudioPublished ? '#fff' : '#eee'} />}
+      </div>
+      {/* <img
           src={isVideoPublished ? CameraOpenSVG : CameraCloseSVG}
           onClick={() => switchCamera(true)}
           className={style.btn}
           alt="camera"
-        />
-      )}
-      {isScreenMode && (
+        /> */}
+      {/* {isScreenMode && (
         <img
           src={isScreenPublished ? ScreenOnSVG : ScreenOffSVG}
           onClick={() => switchScreenCapture()}
           className={style.btn}
           alt="screenShare"
         />
-      )}
-      <img src={LeaveRoomSVG} onClick={leaveRoom} className={style.btn} alt="leave" />
+      )} */}
+      {/* <img src={LeaveRoomSVG} onClick={leaveRoom} className={style.btn} alt="leave" /> */}
     </div>
   );
 }

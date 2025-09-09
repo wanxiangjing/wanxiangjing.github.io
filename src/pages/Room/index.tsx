@@ -3,33 +3,33 @@
  * SPDX-license-identifier: BSD-3-Clause
  */
 
-import { useDispatch, useSelector } from 'react-redux';
-import { memo, useEffect, useRef } from 'react';
-import Conversation from './Conversation';
-import ToolBar from './ToolBar';
-import CameraArea from './CameraArea';
-import AudioController from './AudioController';
-import { isMobile } from '@/utils/utils';
-import style from './index.module.scss';
-import AiAvatarCard from '@/components/AiAvatarCard';
-import store, { RootState } from '@/store';
-import FullScreenCard from '@/components/FullScreenCard';
-import { useDeviceState, useJoin } from '@/core/lib/useCommon';
-import { RTCConfig, SceneConfig, updateFullScreen, updateRTCConfig, updateScene, updateSceneConfig } from '@/store/slices/room';
 import rtcApi from '@/api/rtc';
+import RtcClient from '@/core/lib/RtcClient';
+import { useDeviceState, useJoin } from '@/core/lib/useCommon';
+import store, { RootState } from '@/store';
+import { RTCConfig, SceneConfig, updateFullScreen, updateRTCConfig, updateScene, updateSceneConfig } from '@/store/slices/room';
+import { isMobile } from '@/utils/utils';
+import { VideoRenderMode } from '@volcengine/rtc';
+import { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import Conversation from './Conversation';
+import style from './index.module.scss';
+import ToolBar from './components/Toolbar';
 
 function Room() {
-  const { isShowSubtitle, isFullScreen } = useSelector((state: RootState) => state.room);
+  const { isShowSubtitle, isFullScreen, localUser } = useSelector((state: RootState) => state.room);
   const [joining, dispatchJoin] = useJoin();
   const dispatch = useDispatch();
   const videoRef = useRef<HTMLVideoElement>(null);
-  const mediaStreamRef = useRef<MediaStream>(null);
-
-  
-    const {
-      isAudioPublished,
-      isVideoPublished,
-    } = useDeviceState();
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const { hasPreload, cameraPermission, microphonePermission } = useSelector((state: RootState) => state.global);
+  const navigate = useNavigate();
+  const {
+    isAudioPublished,
+    isVideoPublished,
+    isScreenPublished,
+  } = useDeviceState();
 
   const handleJoinRoom = () => {
     dispatch(updateFullScreen({ isFullScreen: false })); // 初始化
@@ -38,7 +38,22 @@ function Room() {
     }
   }
 
+  const setVideoPlayer = () => {
+    RtcClient.removeVideoPlayer(localUser.username!);
+    if (isVideoPublished) {
+      RtcClient.setLocalVideoPlayer(
+        localUser.username!,
+        'local-player',
+        isScreenPublished,
+        VideoRenderMode.RENDER_MODE_HIDDEN
+      );
+    }
+  };
+
   useEffect(() => {
+    if (!hasPreload) {
+      return;
+    }
     rtcApi.getGuideScene().then((data) => {
       store.dispatch(updateScene(data.scene.id));
       store.dispatch(updateSceneConfig(
@@ -59,93 +74,31 @@ function Room() {
       }
     })
   }, [])
+
   useEffect(() => {
-    const initCamera = async () => {
-      try {
-        // 1. 优先尝试获取理想配置（广角+16:9）
-        const constraints: MediaStreamConstraints = {
-          video: {
-            facingMode: { exact: 'environment' }, // 强制后置广角
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
-            aspectRatio: 16 / 9,
-            // 新增参数提升广角效果
-            advanced: [
-              { width: { min: 1280 } }, // 确保足够宽度
-              { aspectRatio: { exact: 16 / 9 } }
-            ]
-          }
-        };
+    if (!cameraPermission || !microphonePermission) {
+      navigate('/permission');
+    }
+  }, [])
 
-        // 2. 尝试获取媒体流（带降级方案）
-        let stream: MediaStream;
-        try {
-          stream = await navigator.mediaDevices.getUserMedia(constraints);
-        } catch (error) {
-          console.warn('广角模式失败，尝试宽松条件:', error);
-
-          // 降级方案1：保持16:9但不强制广角
-          constraints.video = {
-            aspectRatio: 16 / 9,
-            width: { min: 1280 },
-            facingMode: 'environment' // 非强制
-          };
-
-          stream = await navigator.mediaDevices.getUserMedia(constraints);
-        }
-
-        // 3. 应用流并强制横屏显示
-        mediaStreamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          // 强制横屏显示（即使设备竖屏）
-        }
-
-      } catch (error) {
-        console.error('摄像头初始化完全失败:', error);
-        // 可以在这里添加备用图片或错误提示
-      }
-    };
-
-    initCamera();
-    return () => {
-      mediaStreamRef.current?.getTracks().forEach(track => track.stop());
-    };
-  }, []);
+  useEffect(() => {
+    if (!hasPreload) {
+      return;
+    }
+    if (!isVideoPublished) {
+      return;
+    }
+    setVideoPlayer();
+  }, [isVideoPublished, isScreenPublished]);
 
   return (
     <div className={`${style.wrapper} ${isMobile() ? style.mobile : ''}`}>
-      {isMobile() ? <div className={style.mobilePlayer} id="mobile-local-player" >
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
-          style={{
-            width: '100%',
-            borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-            height: 'auto',
-            objectFit: 'cover',
-            display: isVideoPublished ? 'block' : 'none',
-          }}
-        />
-      </div> : null}
-      {isFullScreen && !isMobile() ? (
-        <FullScreenCard />
-      ) : isMobile() && isShowSubtitle ? null : (
-        <AiAvatarCard
-          showUserTag={!isShowSubtitle}
-          showStatus={!isShowSubtitle}
-          className={isShowSubtitle ? style.subtitleAiAvatar : ''}
-        />
-      )}
-      {isMobile() ? null : <CameraArea />}
+      <div className={style.mobilePlayer} id="local-player" />
       {isShowSubtitle && <Conversation className={style.conversation} />}
       {
         <>
           <ToolBar className={style.toolBar} />
-          <AudioController className={style.controller} />
+          {/* <AudioController className={style.controller} /> */}
         </>
       }
 

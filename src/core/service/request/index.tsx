@@ -1,6 +1,8 @@
 // src/services/api/client.ts
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ApiResponse } from './types';
+import { authClient } from '../auth';
+import { Toast } from 'antd-mobile';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -17,7 +19,7 @@ class ApiClient {
     // 请求拦截器
     this.client.interceptors.request.use(
       (config) => {
-        const token = localStorage.getItem('access_token');
+        const token = authClient.getAccessToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -38,9 +40,33 @@ class ApiClient {
       },
       (error) => {
         if (error.response?.status === 401) {
-          // Token过期，跳转到登录页
-          localStorage.removeItem('access_token');
-          window.location.href = '/login';
+          // 如果是刷新token失败，跳转到登录页
+          console.log(error.config.url);
+          if (error.config.url === '/auth/refresh') {
+            authClient.logout();
+            window.location.href = '/login';
+            Toast.show({
+              icon: '!',
+              content: '登录过期，请重新登录',
+              duration: 1000,
+            });
+            return Promise.reject(error);
+          }
+          // 尝试刷新token
+          return authClient.refreshAccessToken().then((newToken) => {
+            if (newToken) {
+              error.config.headers.Authorization = `Bearer ${newToken}`;
+              return this.client(error.config);
+            }
+            return Promise.reject(error);
+          });
+        }
+        if (error.response?.status === 400) {
+          Toast.show({
+            icon: '!',
+            content: error.response.data.message,
+            duration: 1000,
+          });
         }
         return Promise.reject(error);
       }
@@ -75,4 +101,4 @@ class ApiClient {
 }
 
 // 创建API客户端实例
-export const apiClient = new ApiClient(import.meta.env.VITE_API_BASE_URL || '/api/v1');
+export const apiClient = new ApiClient('/api');

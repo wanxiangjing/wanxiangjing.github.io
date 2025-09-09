@@ -1,0 +1,32 @@
+.roomToolBar {
+    position: absolute;
+    bottom: 50px;
+    left: 5%;
+    width: 90%;
+    height: 120px;
+    border-radius: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 32px;
+    box-sizing: border-box;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+
+    .audioBtn {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: #929292;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .audioBtnActive {
+        @extend .audioBtn;
+        background: #2f54eb;
+    }
+}

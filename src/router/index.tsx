@@ -2,18 +2,11 @@ import Layout from "@/Layout";
 import Login from "@/pages/Login";
 import MainTourGuide from "@/pages/MainTourGuide";
 import Preload from "@/pages/Preload";
+import PermissionPage from "@/pages/PermissionPage";
 import Room from "@/pages/Room";
 import { createBrowserRouter } from "react-router";
 
 const router = createBrowserRouter([
-  {
-    path: "/preload",
-    element: <Preload />,
-  },
-  {
-    path: "/login",
-    element: <Login />,
-  },
   {
     path: "/",
     element: <Layout />,
@@ -23,10 +16,22 @@ const router = createBrowserRouter([
         element: <MainTourGuide />,
       },
       {
-        path: '/room',
-        element: <Room />,
-      }
+        path: '/permission',
+        element: <PermissionPage />,
+      },
     ]
+  },
+  {
+    path: '/room',
+    element: <Room />,
+  },
+  {
+    path: "/preload",
+    element: <Preload />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
   },
 
 ], {
