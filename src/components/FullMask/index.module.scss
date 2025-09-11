@@ -1,0 +1,8 @@
+.fullMask {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}

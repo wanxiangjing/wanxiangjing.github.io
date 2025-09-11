@@ -1,12 +1,17 @@
-import Layout from "@/Layout";
-import Login from "@/pages/Login";
-import MainTourGuide from "@/pages/MainTourGuide";
-import Preload from "@/pages/Preload";
-import PermissionPage from "@/pages/PermissionPage";
-import Room from "@/pages/Room";
-import { createBrowserRouter } from "react-router";
 
-const router = createBrowserRouter([
+import { createHashRouter } from "react-router";
+// 增加懒加载
+import { lazy } from "react";
+
+const Layout = lazy(() => import('@/Layout'));
+const MainTourGuide = lazy(() => import('@/pages/MainTourGuide'));
+const PermissionPage = lazy(() => import('@/pages/PermissionPage'));
+const Room = lazy(() => import('@/pages/Room'));
+const Preload = lazy(() => import('@/pages/Preload'));
+const Login = lazy(() => import('@/pages/Login'));
+
+
+const router = createHashRouter([
   {
     path: "/",
     element: <Layout />,

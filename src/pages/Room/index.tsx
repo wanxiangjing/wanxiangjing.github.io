@@ -8,25 +8,22 @@ import RtcClient from '@/core/lib/RtcClient';
 import { useDeviceState, useJoin } from '@/core/lib/useCommon';
 import store, { RootState } from '@/store';
 import { RTCConfig, SceneConfig, updateFullScreen, updateRTCConfig, updateScene, updateSceneConfig } from '@/store/slices/room';
-import { isMobile } from '@/utils/utils';
 import { VideoRenderMode } from '@volcengine/rtc';
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
-import Conversation from './Conversation';
-import style from './index.module.scss';
+import Conversation from './components/Conversation';
+import LoadingMask from './components/LoadingMask';
 import ToolBar from './components/Toolbar';
+import style from './index.module.scss';
 
 function Room() {
-  const { isShowSubtitle, isFullScreen, localUser } = useSelector((state: RootState) => state.room);
+  const { isShowSubtitle, localUser } = useSelector((state: RootState) => state.room);
   const [joining, dispatchJoin] = useJoin();
   const dispatch = useDispatch();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const mediaStreamRef = useRef<MediaStream | null>(null);
   const { hasPreload, cameraPermission, microphonePermission } = useSelector((state: RootState) => state.global);
   const navigate = useNavigate();
   const {
-    isAudioPublished,
     isVideoPublished,
     isScreenPublished,
   } = useDeviceState();
@@ -51,7 +48,7 @@ function Room() {
   };
 
   useEffect(() => {
-    if (!hasPreload) {
+    if (!hasPreload || !cameraPermission || !microphonePermission) {
       return;
     }
     rtcApi.getGuideScene().then((data) => {
@@ -89,19 +86,14 @@ function Room() {
       return;
     }
     setVideoPlayer();
-  }, [isVideoPublished, isScreenPublished]);
+  }, [isVideoPublished]);
 
   return (
-    <div className={`${style.wrapper} ${isMobile() ? style.mobile : ''}`}>
+    <div className={style.roomContainer}>
+      <LoadingMask />
       <div className={style.mobilePlayer} id="local-player" />
-      {isShowSubtitle && <Conversation className={style.conversation} />}
-      {
-        <>
-          <ToolBar className={style.toolBar} />
-          {/* <AudioController className={style.controller} /> */}
-        </>
-      }
-
+      {isShowSubtitle && <Conversation />}
+      <ToolBar />
       <div className={style.declare}>AI生成内容由大模型生成，不能完全保障真实</div>
     </div>
   );

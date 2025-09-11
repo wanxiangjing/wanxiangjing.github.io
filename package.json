@@ -4,11 +4,14 @@
   "version": "0.0.1",
   "author": "DongJianHao <18639008827@163.com>",
   "type": "module",
+  "homepage": "https://wanxiangjing.github.io",
   "scripts": {
     "dev": "vite --host",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "gh": "gh-pages -d dist",
+    "deploy": "npm run build && npm run gh"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
@@ -37,6 +40,7 @@
     "eslint": "^9.33.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
+    "gh-pages": "^6.3.0",
     "globals": "^16.3.0",
     "postcss": "^8.5.6",
     "sass": "^1.91.0",

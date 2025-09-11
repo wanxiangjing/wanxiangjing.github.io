@@ -1,0 +1,14 @@
+ .audioBtn {
+     width: 80px;
+     height: 80px;
+     border-radius: 50%;
+     background: #929292;
+     display: flex;
+     justify-content: center;
+     align-items: center;
+ }
+
+ .audioBtnActive {
+     @extend .audioBtn;
+     background: #2f54eb;
+ }

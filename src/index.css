@@ -15,7 +15,8 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  --adm-color-primary: #2f54eb !important;
+  --adm-color-primary: rgb(47, 84, 235);
+  --primary-color: rgb(47, 84, 235);
 }
 
 #root {
@@ -38,4 +39,11 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+}
+
+ul,
+li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }

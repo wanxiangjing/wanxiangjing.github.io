@@ -3,27 +3,48 @@
  * SPDX-license-identifier: BSD-3-Clause
  */
 
+import logo from '@/assets/img/logo.png';
+import defaultAvatar from '@/assets/img/userAvatar.png';
 import Loading from '@/components/Loading/HorizonLoading';
 import { useScene } from '@/core/lib/useCommon';
 import { RootState } from '@/store';
-import { isMobile } from '@/utils/utils';
-import { SpinLoading, Tag } from 'antd-mobile';
-import React, { useEffect, useRef } from 'react';
+import { Tag } from 'antd-mobile';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styles from './index.module.scss';
 
-const lines: (string | React.ReactNode)[] = [];
 
-function Conversation(props: React.HTMLAttributes<HTMLDivElement>) {
-  const { className, ...rest } = props;
+function Conversation() {
   const room = useSelector((state: RootState) => state.room);
   const { msgHistory, isFullScreen } = room;
   const { userId } = useSelector((state: RootState) => state.room.localUser);
   const { isAITalking, isUserTalking } = useSelector((state: RootState) => state.room);
+  const [isDisplay, setIsDisplay] = useState(false)
   const { user: storeUser } = useSelector((state: RootState) => state.user);
-  const isAIReady = msgHistory.length > 0;
   const containerRef = useRef<HTMLDivElement>(null);
+  const displayTimer = useRef<NodeJS.Timeout | null>(null)
   const { botName } = useScene();
+  const lastAIMsg = msgHistory.findLast((msg) => msg.user.startsWith('Chat'));
+  const lastUserMsg = msgHistory.findLast((msg) => !!!msg.user.startsWith('Chat'));
+
+  const handleDisplay = () => {
+    setIsDisplay(true)
+    if (displayTimer.current) {
+      clearTimeout(displayTimer.current)
+    }
+    displayTimer.current = setTimeout(() => {
+      setIsDisplay(false)
+    }, 5000)
+  }
+
+  const lastAIMsgValue = useMemo(() => {
+    handleDisplay()
+    return lastAIMsg?.value
+  }, [lastAIMsg?.value])
+  const lastUserMsgValue = useMemo(() => {
+    handleDisplay()
+    return lastUserMsg?.value
+  }, [lastUserMsg?.value])
 
   const isUserTextLoading = (owner: string) => {
     return owner === userId && isUserTalking;
@@ -43,19 +64,8 @@ function Conversation(props: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
       ref={containerRef}
-      className={`${styles.conversation} ${className} ${isFullScreen ? styles.fullScreen : ''} ${isMobile() ? styles.mobileConversation : ''
-        }`}
-      {...rest}
+      className={`${styles.conversation} ${isDisplay ? styles['fade-in'] : styles['fade-out']}`}
     >
-      {lines.map((line) => line)}
-      {!isAIReady ? (
-        <div className={styles.aiReadying}>
-          <SpinLoading className={styles['aiReading-spin']} />
-          AI 准备中, 请稍侯
-        </div>
-      ) : (
-        ''
-      )}
       {msgHistory?.map(({ value, user, isInterrupted }, index) => {
         const isUserMsg = user === userId;
         const isRobotMsg = user === botName;
@@ -65,33 +75,27 @@ function Conversation(props: React.HTMLAttributes<HTMLDivElement>) {
         return (
           <div
             key={`msg-container-${index}`}
-            className={styles.mobileLine}
-            style={{ justifyContent: isUserMsg && isMobile() ? 'flex-end' : '' }}
+            className={` ${isUserMsg ? styles.userMsgContainer : styles.aiMsgContainer}`}
           >
-            {!isMobile() && (
-              <div className={styles.msgName}>
-                <div className={styles.avatar}>
-                  {/* <img src={isUserMsg ? storeUser.avatar : client.logo} alt="Avatar" /> */}
-                </div>
-                {isUserMsg ? `${storeUser.name}（我）` : 'AI 面试官'}
-              </div>
-            )}
             <div
-              className={`${styles.sentence} ${isUserMsg ? styles.user : styles.robot}`}
+              className={`${isUserMsg ? styles.userMsg : styles.aiMsg}`}
               key={`msg-${index}`}
             >
-              <div className={styles.content}>
+
+              {isRobotMsg && <img src={logo} className={styles.avatar} alt="" />}
+              <div className={styles.msg}>
                 {value}
                 <div className={styles['loading-wrapper']}>
-                  {isAIReady &&
+                  {
                     (isUserTextLoading(user) || isAITextLoading(user)) &&
-                    index === msgHistory.length - 1 ? (
-                    <Loading gap={3} className={styles.loading} dotClassName={styles.dot} />
-                  ) : (
-                    ''
-                  )}
+                      index === msgHistory.length - 1 ? (
+                      <Loading gap={3} className={styles.loading} dotClassName={styles.dot} />
+                    ) : (
+                      ''
+                    )}
                 </div>
               </div>
+              {isUserMsg && <img src={storeUser.avatar || defaultAvatar} className={styles.avatar} alt="" />}
               {!isUserMsg && isInterrupted ? <Tag className={styles.interruptTag}>已打断</Tag> : ''}
             </div>
           </div>
