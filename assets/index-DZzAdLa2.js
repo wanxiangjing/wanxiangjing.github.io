@@ -1,1 +1,0 @@
-import{j as s}from"./index-C_sH1c8L.js";const e={},r=i=>s.jsx("div",{className:e["main-tour-guide"],children:s.jsx("div",{className:e["main-tour-guide__title"],children:"欢迎来到万象镜"})});export{r as default};
