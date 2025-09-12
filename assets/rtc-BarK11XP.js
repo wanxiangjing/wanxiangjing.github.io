@@ -1,1 +1,0 @@
-import{b as o}from"./index-DQn4vhZc.js";const e={getGuideScene:async()=>o.post("/rtc/guide/getScenes"),guidStartVoiceChat:async t=>o.post("/rtc/guide/proxy?Action=StartVoiceChat",t),guidStopVoiceChat:async t=>o.post("/rtc/guide/proxy?Action=StopVoiceChat",t)};export{e as r};
