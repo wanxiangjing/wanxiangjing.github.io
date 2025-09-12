@@ -1,1 +1,0 @@
-import{j as i}from"./index-B5B0fcnl.js";import"./store-vendor-wTk_-vyD.js";import"./rtc-vendor-Co3qY2HD.js";const s={},a=t=>i.jsx("div",{className:s["main-tour-guide"],children:i.jsx("div",{className:s["main-tour-guide__title"],children:"欢迎来到万象镜"})});export{a as default};
