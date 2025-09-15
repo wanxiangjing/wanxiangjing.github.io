@@ -8,12 +8,16 @@ import roomSlice, { RoomState } from './slices/room';
 import deviceSlice, { DeviceState } from './slices/device';
 import userSlice, { UserState } from './slices/user';
 import globalSlice, { GlobalState } from './slices/global';
+import roomExtraSlice, { RoomExtraState } from './slices/roomExtra';
+import rtcClientSlice, { RtcClientState } from './slices/RtcClient';
 
 export interface RootState {
   room: RoomState;
   device: DeviceState;
   user: UserState;
   global: GlobalState;
+  roomExtra: RoomExtraState;
+  rtcClient: RtcClientState,
 }
 
 const store = configureStore({
@@ -22,6 +26,8 @@ const store = configureStore({
     device: deviceSlice,
     user: userSlice,
     global: globalSlice,
+    roomExtra: roomExtraSlice,
+    rtcClient: rtcClientSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

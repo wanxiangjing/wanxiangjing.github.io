@@ -3,31 +3,28 @@
  * SPDX-license-identifier: BSD-3-Clause
  */
 
-import { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import VERTC, { MediaType } from '@volcengine/rtc';
-import RtcClient from '@/core/lib/RtcClient';
 import {
   clearCurrentMsg,
   clearHistoryMsg,
   localJoinRoom,
   localLeaveRoom,
   updateAIGCState,
-  updateLocalUser,
 } from '@/store/slices/room';
+import VERTC, { MediaType } from '@volcengine/rtc';
+import { useEffect, useState } from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 import useRtcListeners from '@/core/lib/listenerHooks';
 import { RootState } from '@/store';
 
 import {
+  setDevicePermissions,
   updateMediaInputs,
   updateSelectedDevice,
-  setDevicePermissions,
 } from '@/store/slices/device';
+import { updateLocalUser } from '@/store/slices/roomExtra';
 import logger from '@/utils/logger';
 import { Toast } from 'antd-mobile';
-// import logger from '@/utils/logger';
-
 export const ABORT_VISIBILITY_CHANGE = 'abortVisibilityChange';
 export interface FormProps {
   username: string;
@@ -47,36 +44,37 @@ export const useRTC = () => {
 
 export const useDeviceState = () => {
   const dispatch = useDispatch();
-  const room = useSelector((state: RootState) => state.room);
-  const localUser = room.localUser;
-  const isAudioPublished = localUser.publishAudio;
-  const isVideoPublished = localUser.publishVideo;
-  const isScreenPublished = localUser.publishScreen;
+  const RtcClient = useSelector((state: RootState) => state.rtcClient.RtcClient);
+  const { isAudioPublished, isVideoPublished, isScreenPublished } = useSelector((state: RootState) => ({
+    isAudioPublished: state.roomExtra.localUser.publishAudio,
+    isVideoPublished: state.roomExtra.localUser.publishVideo,
+    isScreenPublished: state.roomExtra.localUser.publishScreen,
+  }), shallowEqual);
   const queryDevices = async (type: MediaType) => {
-    const mediaDevices = await RtcClient.getDevices({
+    const mediaDevices = await RtcClient?.getDevices({
       audio: type === MediaType.AUDIO,
       video: type === MediaType.VIDEO,
     });
     if (type === MediaType.AUDIO) {
       dispatch(
         updateMediaInputs({
-          audioInputs: mediaDevices.audioInputs,
+          audioInputs: mediaDevices?.audioInputs,
         })
       );
       dispatch(
         updateSelectedDevice({
-          selectedMicrophone: mediaDevices.audioInputs[0]?.deviceId,
+          selectedMicrophone: mediaDevices?.audioInputs[0]?.deviceId,
         })
       );
     } else {
       dispatch(
         updateMediaInputs({
-          videoInputs: mediaDevices.videoInputs,
+          videoInputs: mediaDevices?.videoInputs,
         })
       );
       dispatch(
         updateSelectedDevice({
-          selectedCamera: mediaDevices.videoInputs[0]?.deviceId,
+          selectedCamera: mediaDevices?.videoInputs[0]?.deviceId,
         })
       );
     }
@@ -86,11 +84,11 @@ export const useDeviceState = () => {
   const switchMic = async (controlPublish = true) => {
     if (controlPublish) {
       await (!isAudioPublished
-        ? RtcClient.publishStream(MediaType.AUDIO)
-        : RtcClient.unpublishStream(MediaType.AUDIO));
+        ? RtcClient?.publishStream(MediaType.AUDIO)
+        : RtcClient?.unpublishStream(MediaType.AUDIO));
     }
     queryDevices(MediaType.AUDIO);
-    await (!isAudioPublished ? RtcClient.startAudioCapture() : RtcClient.stopAudioCapture());
+    await (!isAudioPublished ? RtcClient?.startAudioCapture() : RtcClient?.stopAudioCapture());
     dispatch(
       updateLocalUser({
         publishAudio: !isAudioPublished,
@@ -101,11 +99,11 @@ export const useDeviceState = () => {
   const switchCamera = async (controlPublish = true) => {
     if (controlPublish) {
       await (!isVideoPublished
-        ? RtcClient.publishStream(MediaType.VIDEO)
-        : RtcClient.unpublishStream(MediaType.VIDEO));
+        ? RtcClient?.publishStream(MediaType.VIDEO)
+        : RtcClient?.unpublishStream(MediaType.VIDEO));
     }
     queryDevices(MediaType.VIDEO);
-    await (!isVideoPublished ? RtcClient.startVideoCapture() : RtcClient.stopVideoCapture());
+    await (!isVideoPublished ? RtcClient?.startVideoCapture() : RtcClient?.stopVideoCapture());
     dispatch(
       updateLocalUser({
         publishVideo: !isVideoPublished,
@@ -120,10 +118,10 @@ export const useDeviceState = () => {
         : sessionStorage.removeItem(ABORT_VISIBILITY_CHANGE);
       if (controlPublish) {
         await (!isScreenPublished
-          ? RtcClient.publishScreenStream(MediaType.VIDEO)
-          : RtcClient.unpublishScreenStream(MediaType.VIDEO));
+          ? RtcClient?.publishScreenStream(MediaType.VIDEO)
+          : RtcClient?.unpublishScreenStream(MediaType.VIDEO));
       }
-      await (!isScreenPublished ? RtcClient.startScreenCapture() : RtcClient.stopScreenCapture());
+      await (!isScreenPublished ? RtcClient?.startScreenCapture() : RtcClient?.stopScreenCapture());
       dispatch(
         updateLocalUser({
           publishScreen: !isScreenPublished,
@@ -151,13 +149,17 @@ export const useGetDevicePermission = () => {
     audio: boolean;
   }>();
 
+
+  const RtcClient = useSelector((state: RootState) => state.rtcClient.RtcClient);
   const dispatch = useDispatch();
 
   useEffect(() => {
     (async () => {
-      const permission = await RtcClient.checkPermission();
-      dispatch(setDevicePermissions(permission));
-      setPermission(permission);
+      const permission = await RtcClient?.checkPermission();
+      if (permission) {
+        dispatch(setDevicePermissions(permission));
+        setPermission(permission);
+      }
     })();
   }, [dispatch]);
   return permission;
@@ -169,8 +171,9 @@ export const useJoin = (): [
 ] => {
   // 关闭进入房间自动开麦，开始面试后才会开
   const devicePermissions = useSelector((state: RootState) => state.device.devicePermissions);
-  const room = useSelector((state: RootState) => state.room);
-  const { id } = useScene()
+  const isAIGCEnable = useSelector((state: RootState) => state.room.isAIGCEnable);
+
+  const RtcClient = useSelector((state: RootState) => state.rtcClient.RtcClient);
 
   const dispatch = useDispatch();
 
@@ -179,13 +182,13 @@ export const useJoin = (): [
   const listeners = useRtcListeners();
 
   const handleAIGCModeStart = async () => {
-    const welcomeMsg = `您好`
-    if (room.isAIGCEnable) {
-      await RtcClient.stopAgent();
+    const welcomeMsg = `您好,欢迎使用万象镜，我是你的AI智能导游！`
+    if (isAIGCEnable) {
+      await RtcClient?.stopAgent();
       dispatch(clearCurrentMsg());
-      await RtcClient.startAgent({ welcomeMsg });
+      await RtcClient?.startAgent({ welcomeMsg });
     } else {
-      await RtcClient.startAgent({ welcomeMsg });
+      await RtcClient?.startAgent({ welcomeMsg });
     }
     dispatch(updateAIGCState({ isAIGCEnable: true }));
   };
@@ -206,32 +209,32 @@ export const useJoin = (): [
     setJoining(true);
 
     /** 1. Create RTC Engine */
-    await RtcClient.createEngine();
+    await RtcClient?.createEngine();
 
     /** 2.1 Set events callbacks */
-    RtcClient.addEventListeners(listeners);
+    RtcClient?.addEventListeners(listeners);
 
     /** 2.2 RTC starting to join room */
-    await RtcClient.joinRoom();
+    await RtcClient?.joinRoom();
     /** 3. Set users' devices info */
-    const mediaDevices = await RtcClient.getDevices({
+    const mediaDevices = await RtcClient?.getDevices({
       audio: true,
       video: true,
     });
 
     dispatch(
       localJoinRoom({
-        roomId: RtcClient.basicInfo.room_id,
+        roomId: RtcClient?.basicInfo.room_id!,
         user: {
-          username: RtcClient.basicInfo.user_id,
-          userId: RtcClient.basicInfo.user_id,
+          username: RtcClient?.basicInfo.user_id,
+          userId: RtcClient?.basicInfo.user_id,
         },
       })
     );
     dispatch(
       updateSelectedDevice({
-        selectedMicrophone: mediaDevices.audioInputs[0]?.deviceId,
-        selectedCamera: mediaDevices.videoInputs[0]?.deviceId,
+        selectedMicrophone: mediaDevices!.audioInputs[0]?.deviceId,
+        selectedCamera: mediaDevices!.videoInputs[0]?.deviceId,
       })
     );
     dispatch(updateMediaInputs(mediaDevices));
@@ -261,15 +264,16 @@ export const useJoin = (): [
 
 export const useLeave = () => {
   const dispatch = useDispatch();
+  const RtcClient = useSelector((state: RootState) => state.rtcClient.RtcClient);
 
   return async function () {
     await Promise.all([
-      RtcClient.stopAudioCapture,
-      RtcClient.stopScreenCapture,
-      RtcClient.stopVideoCapture,
+      RtcClient?.stopAudioCapture,
+      RtcClient?.stopScreenCapture,
+      RtcClient?.stopVideoCapture,
     ]);
-    await RtcClient.stopAgent();
-    await RtcClient.leaveRoom();
+    await RtcClient?.stopAgent();
+    await RtcClient?.leaveRoom();
     dispatch(clearHistoryMsg());
     dispatch(clearCurrentMsg());
     dispatch(localLeaveRoom());

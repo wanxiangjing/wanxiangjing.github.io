@@ -3,7 +3,7 @@
  * SPDX-license-identifier: BSD-3-Clause
  */
 
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import logger from './logger';
 import {
   setHistoryMsg,
@@ -11,8 +11,9 @@ import {
   updateAITalkState,
   updateAIThinkState,
 } from '@/store/slices/room';
-import RtcClient from '@/core/lib/RtcClient';
+import  RTCClient  from '@/core/lib/RtcClient';
 import { string2tlv, tlv2String } from '@/utils/utils';
+import { RootState } from '@/store';
 
 export type AnyRecord = Record<string, any>;
 
@@ -80,6 +81,8 @@ export const MessageTypeCode = {
 
 export const useMessageHandler = () => {
   const dispatch = useDispatch();
+  
+  const RtcClient = useSelector((state: RootState) => state.rtcClient.RtcClient);
 
   const maps = {
     /**
@@ -112,12 +115,11 @@ export const useMessageHandler = () => {
      * @note https://www.volcengine.com/docs/6348/1337284?s=g
      */
     [MESSAGE_TYPE.SUBTITLE]: (parsed: AnyRecord) => {
-      const data = parsed.data?.[0] || {};
+      const data = parsed.data?.[0] || {};      
       /** debounce 记录用户输入文字 */
       if (data) {
         const { text: msg, definite, userId: user, paragraph } = data;
-        console.log('util==>', msg, data);
-        const isAudioEnable = RtcClient.getAgentEnabled();
+        const isAudioEnable = RtcClient?.getAgentEnabled();
         if ((window as any)._debug_mode) {
           logger.debug('handleRoomBinaryMessageReceived', data);
         }
@@ -137,7 +139,7 @@ export const useMessageHandler = () => {
         getcurrentweather: '今天下雪， 最低气温零下10度',
       };
 
-      RtcClient.engine.sendUserBinaryMessage(
+      RtcClient?.engine.sendUserBinaryMessage(
         'RobotMan_',
         string2tlv(
           JSON.stringify({

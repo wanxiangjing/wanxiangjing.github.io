@@ -10,8 +10,21 @@ export default defineConfig({
       '@': resolve(__dirname, 'src'),
     },
   },
-  css: {
-    postcss: './postcss.config.js',
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // redux
+          'store-vendor': ['redux', 'react-redux'],
+          // 将工具库分组
+          'utils-vendor': ['axios'],
+          // RTC
+          'rtc-vendor': ['@volcengine/rtc'],
+          // 按路由拆分（如果使用React Router）
+          // ...其他自定义分组
+        }
+      }
+    }
   },
   server: {
     proxy: {

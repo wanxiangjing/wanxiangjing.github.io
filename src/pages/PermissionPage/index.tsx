@@ -1,16 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
-import styles from './index.module.scss';
-import { AudioOutline, CameraOutline, CheckOutline } from 'antd-mobile-icons';
-import { T } from 'react-router/dist/development/index-react-server-client-BKpa2trA';
-import { Toast } from 'antd-mobile';
-import { useNavigate } from 'react-router';
+import RTCClient from '@/core/lib/RtcClient';
 import { RootState } from '@/store';
-import { useDispatch, useSelector } from 'react-redux';
 import { updateCameraPermission, updateMicrophonePermission } from '@/store/slices/global';
+import { setRtcClient } from '@/store/slices/RtcClient';
+import { Toast } from 'antd-mobile';
+import { AudioOutline, CameraOutline, CheckOutline } from 'antd-mobile-icons';
+import { useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
+import styles from './index.module.scss';
 
 const PermissionPage = () => {
     const connectorRef = useRef<HTMLDivElement>(null);
     const { cameraPermission, microphonePermission } = useSelector((state: RootState) => state.global);
+    const RtcClient = useSelector((state: RootState) => state.rtcClient.RtcClient);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -36,6 +38,13 @@ const PermissionPage = () => {
                 dispatch(updateMicrophonePermission(false));
             });
     };
+
+    useEffect(() => {
+        if (!RtcClient) {
+            console.log('初始化rtcClient')
+            dispatch(setRtcClient(new RTCClient()))
+        }
+    }, [])
 
 
     useEffect(() => {

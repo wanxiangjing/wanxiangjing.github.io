@@ -15,7 +15,7 @@ const tabs = [
         icon: <AppOutline />,
     },
     {
-        key: '/room',
+        key: '/permission',
         title: '开始导游',
         icon: <img src={roomIcon} className={styles.roomIcon} alt="room" />,
     },
@@ -61,7 +61,6 @@ const Layout = () => {
                 </TabBar>
             </div>
         </div>
-
     )
 }
 

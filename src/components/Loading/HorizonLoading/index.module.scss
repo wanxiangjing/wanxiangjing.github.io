@@ -1,16 +1,24 @@
-/**
- * Copyright 2025 Beijing Volcano Engine Technology Co., Ltd. All Rights Reserved.
- * SPDX-license-identifier: BSD-3-Clause
- */
-
-.loader {
+// DotsLoader.module.scss
+.container {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    gap: 4px;
 }
 
 .dot {
-    width: 10px;
-    height: 10px;
     border-radius: 50%;
-    background-color: white;
-    animation: glow 0.9s infinite;
+    animation: glow linear 1s infinite;
+
+    @keyframes glow {
+        0%,
+        100% {
+            opacity: 0.1;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
 }

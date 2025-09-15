@@ -1,12 +1,11 @@
 .conversation {
-    width: 100%;
+    width: 92vw;
     height: 50vh;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     transition: opacity 0.5s ease-in-out;
     overflow: auto;
-    padding: 0 4vw;
     padding-top: 6%;
     padding-bottom: 3rem;
 
@@ -77,9 +76,20 @@
             color: #fff;
         }
     }
+    .avatarWrap{
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
 
     .userMsg {
         // 整体靠右
         @extend .aiMsg;
+    }
+    .loading{
+        float: left;
     }
 }

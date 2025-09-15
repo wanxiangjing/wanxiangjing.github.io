@@ -44,7 +44,7 @@ class ApiClient {
           console.log(error.config.url);
           if (error.config.url === '/auth/refresh') {
             authClient.logout();
-            window.location.href = '/login';
+            window.location.href = '/#/login';
             Toast.show({
               icon: '!',
               content: '登录过期，请重新登录',
@@ -101,4 +101,4 @@ class ApiClient {
 }
 
 // 创建API客户端实例
-export const apiClient = new ApiClient('/api');
+export const apiClient = new ApiClient("https://api.aibanyou.top/api/v1/usr/");

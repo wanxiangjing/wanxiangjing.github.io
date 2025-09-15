@@ -1,44 +1,83 @@
+import { createHashRouter } from "react-router-dom";
+import { lazy, Suspense } from "react";
+import RouterLoading from "@/components/Loading/RouterLoading"; // 你的 Loading 组件
 
-import { createHashRouter } from "react-router";
-// 增加懒加载
-import { lazy } from "react";
+const Layout = lazy(() => import("@/Layout"));
+const MainTourGuide = lazy(() => import("@/pages/MainTourGuide"));
+const PermissionPage = lazy(() => import("@/pages/PermissionPage"));
+const Room = lazy(() => import("@/pages/Room"));
+const Preload = lazy(() => import("@/pages/Preload"));
+const Login = lazy(() => import("@/pages/Login"));
+const Profile = lazy(() => import("@/pages/Profile"));
 
-const Layout = lazy(() => import('@/Layout'));
-const MainTourGuide = lazy(() => import('@/pages/MainTourGuide'));
-const PermissionPage = lazy(() => import('@/pages/PermissionPage'));
-const Room = lazy(() => import('@/pages/Room'));
-const Preload = lazy(() => import('@/pages/Preload'));
-const Login = lazy(() => import('@/pages/Login'));
-
+const RouterSuspense=({children}:{children:React.ReactNode})=>{
+    return (
+        <Suspense fallback={<RouterLoading />}>
+            {children}
+        </Suspense>
+    )
+}
 
 const router = createHashRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+        <RouterSuspense>
+            <Layout />
+        </RouterSuspense>
+    ),
     children: [
       {
         index: true,
-        element: <MainTourGuide />,
+        element: (
+          <RouterSuspense>
+            <MainTourGuide />
+          </RouterSuspense>
+        ),
       },
       {
-        path: '/permission',
-        element: <PermissionPage />,
+        path: "/permission",
+        element: (
+          <RouterSuspense>
+            <PermissionPage />
+          </RouterSuspense>
+        ),
       },
-    ]
+      {
+        path: "/profile",
+        element: (
+          <RouterSuspense>
+            <Profile />
+          </RouterSuspense>
+        ),
+      },
+      
+    ],
   },
   {
-    path: '/room',
-    element: <Room />,
+    path: "/room",
+    element: (
+      <RouterSuspense>
+        <Room />
+      </RouterSuspense>
+    ),
   },
   {
     path: "/preload",
-    element: <Preload />,
+    element: (
+      <RouterSuspense>
+        <Preload />
+      </RouterSuspense>
+    ),
   },
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <RouterSuspense>
+        <Login />
+      </RouterSuspense>
+    ),
   },
-
 ], {
   basename: "/",
 });

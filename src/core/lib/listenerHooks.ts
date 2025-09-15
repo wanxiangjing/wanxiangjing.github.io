@@ -18,8 +18,13 @@ import VERTC, {
   PlayerEvent,
   NetworkQuality,
 } from '@volcengine/rtc';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useRef } from 'react';
+
+import {
+  addAutoPlayFail,
+  removeAutoPlayFail,
+} from '@/store/slices/room';
 
 import {
   IUser,
@@ -27,26 +32,27 @@ import {
   remoteUserLeave,
   updateLocalUser,
   updateRemoteUser,
-  addAutoPlayFail,
-  removeAutoPlayFail,
   updateNetworkQuality,
-} from '@/store/slices/room';
-import RtcClient, { IEventListener } from './RtcClient';
+} from '@/store/slices/roomExtra';
+import  { IEventListener } from './RtcClient';
 
 import { setMicrophoneList, updateSelectedDevice } from '@/store/slices/device';
 import { useMessageHandler } from '@/utils/handler';
+import { RootState } from '@/store';
 
 const useRtcListeners = (): IEventListener => {
   const dispatch = useDispatch();
   const { parser } = useMessageHandler();
+  const RtcClient = useSelector((state: RootState) => state.rtcClient.RtcClient);
+
   const playStatus = useRef<{ [key: string]: { audio: boolean; video: boolean } }>({});
 
   const handleTrackEnded = async (event: { kind: string; isScreen: boolean }) => {
     const { kind, isScreen } = event;
     /** 浏览器自带的屏幕共享关闭触发方式，通过 onTrackEnd 事件去关闭 */
     if (isScreen && kind === 'video') {
-      await RtcClient.stopScreenCapture();
-      await RtcClient.unpublishScreenStream(MediaType.VIDEO);
+      await RtcClient?.stopScreenCapture();
+      await RtcClient?.unpublishScreenStream(MediaType.VIDEO);
       dispatch(
         updateLocalUser({
           publishScreen: false,
@@ -152,15 +158,15 @@ const useRtcListeners = (): IEventListener => {
   };
 
   const handleAudioDeviceStateChanged = async (device: DeviceInfo) => {
-    const devices = await RtcClient.getDevices();
+    const devices = await RtcClient?.getDevices();
 
     if (device.mediaDeviceInfo.kind === 'audioinput') {
       let deviceId = device.mediaDeviceInfo.deviceId;
       if (device.deviceState === 'inactive') {
-        deviceId = devices.audioInputs?.[0].deviceId || '';
+        deviceId = devices?.audioInputs?.[0].deviceId || '';
       }
-      RtcClient.switchDevice(MediaType.AUDIO, deviceId);
-      dispatch(setMicrophoneList(devices.audioInputs));
+      RtcClient?.switchDevice(MediaType.AUDIO, deviceId);
+      dispatch(setMicrophoneList(devices?.audioInputs || []));
 
       dispatch(
         updateSelectedDevice({
@@ -238,6 +244,9 @@ const useRtcListeners = (): IEventListener => {
     const { message } = event;
     parser(message);
   };
+  const handleVideoDeviceStateChanged = (device: DeviceInfo) => {
+    console.log('handleVideoDeviceStateChanged', device);
+  };
 
   return {
     handleError,
@@ -255,6 +264,7 @@ const useRtcListeners = (): IEventListener => {
     handlePlayerEvent,
     handleRoomBinaryMessageReceived,
     handleNetworkQuality,
+    handleVideoDeviceStateChanged,
   };
 };
 

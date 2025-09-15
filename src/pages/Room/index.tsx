@@ -4,11 +4,9 @@
  */
 
 import rtcApi from '@/api/rtc';
-import RtcClient from '@/core/lib/RtcClient';
-import { useDeviceState, useJoin } from '@/core/lib/useCommon';
+import { useDeviceState, useJoin, useLeave } from '@/core/lib/useCommon';
 import store, { RootState } from '@/store';
 import { RTCConfig, SceneConfig, updateFullScreen, updateRTCConfig, updateScene, updateSceneConfig } from '@/store/slices/room';
-import { VideoRenderMode } from '@volcengine/rtc';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -16,17 +14,20 @@ import Conversation from './components/Conversation';
 import LoadingMask from './components/LoadingMask';
 import ToolBar from './components/Toolbar';
 import style from './index.module.scss';
+import useVideoPlayer from '@/utils/hooks/useVideoPlayer';
 
 function Room() {
-  const { isShowSubtitle, localUser } = useSelector((state: RootState) => state.room);
+  const isShowSubtitle = useSelector((state: RootState) => state.room.isShowSubtitle);
   const [joining, dispatchJoin] = useJoin();
   const dispatch = useDispatch();
   const { hasPreload, cameraPermission, microphonePermission } = useSelector((state: RootState) => state.global);
   const navigate = useNavigate();
+  const leaveRoom = useLeave()
   const {
     isVideoPublished,
-    isScreenPublished,
   } = useDeviceState();
+
+  const { setVideoPlayer } = useVideoPlayer();
 
   const handleJoinRoom = () => {
     dispatch(updateFullScreen({ isFullScreen: false })); // 初始化
@@ -34,18 +35,6 @@ function Room() {
       dispatchJoin();
     }
   }
-
-  const setVideoPlayer = () => {
-    RtcClient.removeVideoPlayer(localUser.username!);
-    if (isVideoPublished) {
-      RtcClient.setLocalVideoPlayer(
-        localUser.username!,
-        'local-player',
-        isScreenPublished,
-        VideoRenderMode.RENDER_MODE_HIDDEN
-      );
-    }
-  };
 
   useEffect(() => {
     if (!hasPreload || !cameraPermission || !microphonePermission) {
@@ -75,6 +64,10 @@ function Room() {
   useEffect(() => {
     if (!cameraPermission || !microphonePermission) {
       navigate('/permission');
+    }
+    return () => {
+      console.log('退出讲解')
+      leaveRoom();
     }
   }, [])
 

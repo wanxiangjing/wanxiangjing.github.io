@@ -12,11 +12,15 @@ class AuthClient {
         this.accessToken = null;
         this.refreshToken = localStorage.getItem('refreshToken');
         if (this.refreshToken) {
-            this.refreshAccessToken().then(() => {
-                this.getUserInfo().then((res) => {
-                    store.dispatch(updateUser(res));
+            setTimeout(() => {
+                this.refreshAccessToken().then(() => {
+                    this.getUserInfo().then((res) => {
+                        store.dispatch(updateUser(res));
+                    });
                 });
-            });
+            }, 0);
+        }else{
+            window.location.href = '/#/login';
         }
     }
 

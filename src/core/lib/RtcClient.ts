@@ -3,32 +3,31 @@
  * SPDX-license-identifier: BSD-3-Clause
  */
 
+import rtcApi from '@/api/rtc';
+import { COMMAND, INTERRUPT_PRIORITY } from '@/utils/handler';
+import { string2tlv } from '@/utils/utils';
 import VERTC, {
-  MirrorType,
-  StreamIndex,
+  AudioProfileType,
+  AutoPlayFailedEvent,
+  DeviceInfo,
   IRTCEngine,
+  LocalAudioPropertiesInfo,
+  LocalStreamStats,
+  MediaType,
+  MirrorType,
+  NetworkQuality,
+  PlayerEvent,
+  RemoteAudioPropertiesInfo,
+  RemoteStreamStats,
   RoomProfileType,
+  ScreenEncoderConfig,
+  StreamIndex,
+  StreamRemoveReason,
+  VideoRenderMode,
   onUserJoinedEvent,
   onUserLeaveEvent,
-  MediaType,
-  LocalStreamStats,
-  RemoteStreamStats,
-  StreamRemoveReason,
-  LocalAudioPropertiesInfo,
-  RemoteAudioPropertiesInfo,
-  AudioProfileType,
-  DeviceInfo,
-  AutoPlayFailedEvent,
-  PlayerEvent,
-  NetworkQuality,
-  VideoRenderMode,
-  ScreenEncoderConfig,
 } from '@volcengine/rtc';
-import RTCAIAnsExtension from '@volcengine/rtc/extension-ainr';
-import { string2tlv } from '@/utils/utils';
-import { COMMAND, INTERRUPT_PRIORITY } from '@/utils/handler';
 import { Toast } from 'antd-mobile';
-import rtcApi from '@/api/rtc';
 
 export interface IEventListener {
   handleError: (e: { errorCode: any }) => void;
@@ -53,6 +52,7 @@ export interface IEventListener {
     uplinkNetworkQuality: NetworkQuality,
     downlinkNetworkQuality: NetworkQuality
   ) => void;
+  handleVideoDeviceStateChanged: (e: DeviceInfo) => void;
 }
 
 export interface BasicBody {
@@ -75,21 +75,20 @@ export class RTCClient {
 
   private _videoCaptureDevice?: string;
 
+  private mirrorType = MirrorType.MIRROR_TYPE_RENDER;
+
   audioBotEnabled = false;
 
   audioBotStartTime = 0;
 
   createEngine = async () => {
     this.engine = VERTC.createEngine(this.basicInfo.app_id);
-    try {
-      const AIAnsExtension = new RTCAIAnsExtension();
-      await this.engine.registerExtension(AIAnsExtension);
-      AIAnsExtension.enable();
-    } catch (error) {
-      console.warn(
-        `当前环境不支持 AI 降噪, 此错误可忽略, 不影响实际使用, e: ${(error as any).message}`
-      );
-    }
+    // 开启web浏览器降噪 
+    await this.engine.setAudioCaptureConfig({
+      noiseSuppression: true,
+      echoCancellation: true,
+      autoGainControl: true,
+    })
   };
 
   addEventListeners = ({
@@ -108,6 +107,7 @@ export class RTCClient {
     handlePlayerEvent,
     handleRoomBinaryMessageReceived,
     handleNetworkQuality,
+    handleVideoDeviceStateChanged,
   }: IEventListener) => {
     this.engine.on(VERTC.events.onError, handleError);
     this.engine.on(VERTC.events.onUserJoined, handleUserJoin);
@@ -124,6 +124,7 @@ export class RTCClient {
     this.engine.on(VERTC.events.onPlayerEvent, handlePlayerEvent);
     this.engine.on(VERTC.events.onRoomBinaryMessageReceived, handleRoomBinaryMessageReceived);
     this.engine.on(VERTC.events.onNetworkQuality, handleNetworkQuality);
+    this.engine.on(VERTC.events.onVideoDeviceStateChanged, handleVideoDeviceStateChanged);
   };
 
   joinRoom = () => {
@@ -312,7 +313,9 @@ export class RTCClient {
     }
     if (deviceType === MediaType.VIDEO) {
       this._videoCaptureDevice = deviceId;
-      this.engine.setVideoCaptureDevice(deviceId);
+      this.engine.setVideoCaptureDevice(deviceId).then(() => {
+        this.checkMirrorType();
+      });
     }
     if (deviceType === MediaType.AUDIO_AND_VIDEO) {
       this._audioCaptureDevice = deviceId;
@@ -325,6 +328,16 @@ export class RTCClient {
   setLocalVideoMirrorType = (type: MirrorType) => {
     return this.engine.setLocalVideoMirrorType(type);
   };
+  private checkMirrorType = () => {
+    // 同时切换镜像,获取当前镜像
+    if (this.mirrorType === MirrorType.MIRROR_TYPE_RENDER) {
+      this.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_NONE);
+      this.mirrorType = MirrorType.MIRROR_TYPE_NONE;
+    } else {
+      this.setLocalVideoMirrorType(MirrorType.MIRROR_TYPE_RENDER);
+      this.mirrorType = MirrorType.MIRROR_TYPE_RENDER;
+    }
+  }
 
   setLocalVideoPlayer = (
     userId: string,
@@ -442,4 +455,4 @@ export class RTCClient {
   };
 }
 
-export default new RTCClient();
+export default RTCClient

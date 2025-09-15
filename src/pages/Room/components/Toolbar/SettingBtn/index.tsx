@@ -3,9 +3,20 @@ import styles from './index.module.scss';
 import { useState } from 'react';
 import { List, Mask, Switch } from 'antd-mobile';
 import FullMask from '@/components/FullMask';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { updateDisplaySubtitleByTimer, updateShowSubtitle } from '@/store/slices/room';
 
 const SettingBtn = () => {
     const [settingVisible, setSettingVisible] = useState(false);
+    const isShowSubtitle = useSelector((state: RootState) => state.room.isShowSubtitle);
+    const dispatch = useDispatch();
+    const handleShowSubtitleChange = (value: boolean) => {
+        if(value){
+            dispatch(updateDisplaySubtitleByTimer(true));
+        }
+        dispatch(updateShowSubtitle(value));
+    }
     return (<>
         <FullMask
             visible={settingVisible}
@@ -25,7 +36,7 @@ const SettingBtn = () => {
                         </div>
                         <div className={styles.itemLabel}>字幕</div>
                         <div className={styles.extra}>
-                            <Switch style={{ '--width': '46px', '--height': '24px', '--border-width': '0px' }} />
+                            <Switch style={{ '--width': '46px', '--height': '24px', '--border-width': '0px' }} checked={isShowSubtitle} onChange={handleShowSubtitleChange} />
                         </div>
                     </li>   
                 </ul>

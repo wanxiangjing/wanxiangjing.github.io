@@ -3,29 +3,13 @@
  * SPDX-license-identifier: BSD-3-Clause
  */
 
-import { createSlice } from '@reduxjs/toolkit';
-import {
-  AudioPropertiesInfo,
-  LocalAudioStats,
-  NetworkQuality,
-  RemoteAudioStats,
-} from '@volcengine/rtc';
 import RtcClient from '@/core/lib/RtcClient';
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+  NetworkQuality
+} from '@volcengine/rtc';
+import { LocalUser, roomExtraSlice } from './roomExtra';
 
-export interface IUser {
-  username?: string;
-  userId?: string;
-  publishAudio?: boolean;
-  publishVideo?: boolean;
-  publishScreen?: boolean;
-  audioStats?: RemoteAudioStats;
-  audioPropertiesInfo?: AudioPropertiesInfo;
-}
-
-export type LocalUser = Omit<IUser, 'audioStats'> & {
-  loginToken?: string;
-  audioStats?: LocalAudioStats;
-};
 
 export interface Msg {
   value: string;
@@ -57,8 +41,6 @@ export interface RTCConfig {
 export interface RoomState {
   time: number;
   roomId?: string;
-  localUser: LocalUser;
-  remoteUsers: IUser[];
   autoPlayFailUser: string[];
   /**
    * @brief 是否已加房
@@ -94,11 +76,6 @@ export interface RoomState {
    */
   isUserTalking: boolean;
   /**
-   * @brief 网络质量
-   */
-  networkQuality: NetworkQuality;
-
-  /**
    * @brief 对话记录
    */
   msgHistory: Msg[];
@@ -124,6 +101,9 @@ export interface RoomState {
    */
   isShowSubtitle: boolean;
 
+  // 控制字幕根据时间显示
+  isDisplaySubtitleByTimer: boolean;
+
   /**
    * @brief 是否全屏
    */
@@ -140,23 +120,17 @@ const initialState: RoomState = {
   scene: '',
   sceneConfigMap: {},
   rtcConfigMap: {},
-  remoteUsers: [],
-  localUser: {
-    publishAudio: false,
-    publishVideo: false,
-    publishScreen: false,
-  },
   autoPlayFailUser: [],
   isJoined: false,
   isAIGCEnable: false,
   isAIThinking: false,
   isAITalking: false,
   isUserTalking: false,
-  networkQuality: NetworkQuality.UNKNOWN,
 
   msgHistory: [],
   currentConversation: {},
   isShowSubtitle: true,
+  isDisplaySubtitleByTimer: false,
   isFullScreen: false,
   customSceneName: '',
 };
@@ -177,31 +151,24 @@ export const roomSlice = createSlice({
       }
     ) => {
       state.roomId = payload.roomId;
-      state.localUser = {
-        ...state.localUser,
-        ...payload.user,
-      };
+      // state.localUser = {
+      //   ...state.localUser,
+      //   ...payload.user,
+      // };
       state.isJoined = true;
     },
     localLeaveRoom: (state) => {
       state.roomId = undefined;
       state.time = -1;
-      state.localUser = {
-        publishAudio: false,
-        publishVideo: false,
-        publishScreen: false,
-      };
-      state.remoteUsers = [];
+      // state.localUser = {
+      //   publishAudio: false,
+      //   publishVideo: false,
+      //   publishScreen: false,
+      // };
+      // state.remoteUsers = [];
       state.isJoined = false;
     },
-    remoteUserJoin: (state, { payload }) => {
-      state.remoteUsers.push(payload);
-    },
-    remoteUserLeave: (state, { payload }) => {
-      const findIndex = state.remoteUsers.findIndex((user) => user.userId === payload.userId);
-      state.remoteUsers.splice(findIndex, 1);
-    },
-
+    
     updateScene: (state, { payload }) => {
       state.scene = payload;
     },
@@ -212,37 +179,6 @@ export const roomSlice = createSlice({
 
     updateRTCConfig: (state, { payload }) => {
       state.rtcConfigMap = payload;
-      RtcClient.basicInfo = {
-        app_id: payload[state.scene].AppId,
-        room_id: payload[state.scene].RoomId,
-        user_id: payload[state.scene].UserId,
-        token: payload[state.scene].Token,
-      };
-    },
-
-    updateLocalUser: (state, { payload }: { payload: Partial<LocalUser> }) => {
-      state.localUser = {
-        ...state.localUser,
-        ...(payload || {}),
-      };
-    },
-
-    updateNetworkQuality: (state, { payload }) => {
-      state.networkQuality = payload.networkQuality;
-    },
-
-    updateRemoteUser: (state, { payload }: { payload: IUser | IUser[] }) => {
-      if (!Array.isArray(payload)) {
-        payload = [payload];
-      }
-
-      payload.forEach((user) => {
-        const findIndex = state.remoteUsers.findIndex((u) => u.userId === user.userId);
-        state.remoteUsers[findIndex] = {
-          ...state.remoteUsers[findIndex],
-          ...user,
-        };
-      });
     },
 
     updateRoomTime: (state, { payload }) => {
@@ -345,8 +281,11 @@ export const roomSlice = createSlice({
       state.isAITalking = false;
       state.isUserTalking = false;
     },
-    updateShowSubtitle: (state, { payload }) => {
-      state.isShowSubtitle = payload.isShowSubtitle;
+    updateShowSubtitle: (state, { payload }: PayloadAction<boolean>) => {
+      state.isShowSubtitle = payload;
+    },
+    updateDisplaySubtitleByTimer: (state, { payload }: PayloadAction<boolean>) => {
+      state.isDisplaySubtitleByTimer = payload;
     },
     updateFullScreen: (state, { payload }) => {
       state.isFullScreen = payload.isFullScreen;
@@ -360,10 +299,10 @@ export const roomSlice = createSlice({
 export const {
   localJoinRoom,
   localLeaveRoom,
-  remoteUserJoin,
-  remoteUserLeave,
-  updateRemoteUser,
-  updateLocalUser,
+  // remoteUserJoin,
+  // remoteUserLeave,
+  // updateRemoteUser,
+  // updateLocalUser,
   updateRoomTime,
   addAutoPlayFail,
   removeAutoPlayFail,
@@ -375,7 +314,7 @@ export const {
   clearHistoryMsg,
   clearCurrentMsg,
   setInterruptMsg,
-  updateNetworkQuality,
+  // updateNetworkQuality,
   updateScene,
   updateSceneConfig,
   updateRTCConfig,
@@ -383,6 +322,7 @@ export const {
   updateFullScreen,
   updatecustomSceneName,
   setHistoryMsgComplete,
+  updateDisplaySubtitleByTimer
 } = roomSlice.actions;
 
 export default roomSlice.reducer;

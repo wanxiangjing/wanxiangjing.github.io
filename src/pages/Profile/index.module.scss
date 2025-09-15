@@ -1,0 +1,263 @@
+// 变量定义
+$primary: #3b82f6;
+$secondary: #10b981;
+$accent: #8b5cf6;
+$red: #ef4444;
+$gray-900: #111827;
+$gray-800: #1f2937;
+$gray-700: #374151;
+$gray-600: #4b5563;
+$gray-500: #6b7280;
+$gray-400: #9ca3af;
+$gray-300: #d1d5db;
+$gray-200: #e5e7eb;
+$gray-100: #f3f4f6;
+$darkBlue: #2563eb;
+
+// 基础样式
+.profilePage {
+
+  &.active {
+    display: block;
+  }
+}
+
+.profileContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background: linear-gradient(to bottom, $gray-900, #111827);
+}
+
+// 顶部导航栏
+.topNav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(31, 41, 55, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.navContent {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.backButton {
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 0.2s;
+
+  &:hover {
+    color: white;
+  }
+}
+
+.icon {
+  margin-right: 0.25rem;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+}
+
+.spacer {
+  width: 2.5rem;
+}
+
+// 个人信息
+.profileContent {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2.5rem;
+}
+
+.avatarContainer {
+  position: relative;
+  width: 6rem;
+  height: 6rem;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 2px solid $primary;
+}
+
+.avatarEdit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background-color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid $gray-900;
+}
+
+.cameraIcon {
+  color: white;
+  font-size: 0.75rem;
+}
+
+.userName {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: white;
+}
+
+.loginStatus {
+  color: $gray-400;
+  font-size: 0.875rem;
+}
+
+.loginButton {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background-color: $primary;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: $darkBlue;
+  }
+}
+
+// 我的足迹
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.footprintContainer {
+  background-color: rgba(31, 41, 55, 0.3);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.emptyFootprint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 0;
+}
+
+.markerIcon {
+  color: $gray-600;
+  font-size: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.emptyText {
+  color: $gray-500;
+}
+
+// 功能菜单
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.menuItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  background-color: rgba(31, 41, 55, 0.3);
+  transition: all 0.2s;
+
+  &:hover {
+    background-color: rgba(31, 41, 55, 0.5);
+  }
+}
+
+.menuIconContainer {
+  display: flex;
+  align-items: center;
+}
+
+.menuIconPrimary {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background-color: rgba($primary, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+}
+
+.menuIconSecondary {
+  @extend .menuIconPrimary;
+  background-color: rgba($secondary, 0.2);
+}
+
+.menuIconAccent {
+  @extend .menuIconPrimary;
+  background-color: rgba($accent, 0.2);
+}
+
+.menuIconRed {
+  @extend .menuIconPrimary;
+  background-color: rgba($red, 0.2);
+}
+
+.menuIcon {
+  color: $primary;
+  font-size: 1rem;
+}
+
+.menuIconSecondary .menuIcon {
+  color: $secondary;
+}
+
+.menuIconAccent .menuIcon {
+  color: $accent;
+}
+
+.menuIconRed .menuIcon {
+  color: $red;
+}
+
+.menuText {
+  color: white;
+  font-weight: 500;
+}
+
+.chevronIcon {
+  color: $gray-500;
+}

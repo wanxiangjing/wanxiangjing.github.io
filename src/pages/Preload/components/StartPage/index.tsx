@@ -17,7 +17,7 @@ const StartPage = () => {
         if (authClient.getIsLogin()) {
             navigate(redirect || '/');
         } else {
-            navigate(`/login?redirect=${redirect || '/'}`);
+            navigate(`/#/login?redirect=${redirect || '/'}`);
         }
     }
 

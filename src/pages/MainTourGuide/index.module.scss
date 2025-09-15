@@ -1,0 +1,444 @@
+// 变量定义
+$primary: #3b82f6;
+$secondary: #10b981;
+$accent: #8b5cf6;
+$red: #ef4444;
+$yellow: #f59e0b;
+$gray-900: #111827;
+$gray-800: #1f2937;
+$gray-700: #374151;
+$gray-600: #4b5563;
+$gray-500: #6b7280;
+$gray-400: #9ca3af;
+$gray-300: #d1d5db;
+$gray-200: #e5e7eb;
+$gray-100: #f3f4f6;
+$darkBlue: #2563eb;
+$white: #ffffff;
+
+// 基础样式
+.homePage {
+
+  &.active {
+    display: block;
+  }
+}
+
+.homeContainer {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  background-color: $white;
+}
+
+// 顶部导航栏
+.topNav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background-color: $white;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.navContent {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0.75rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logoIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background-color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.eyeIcon {
+  color: $white;
+  font-size: 1.25rem;
+}
+
+.logoText {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: $white;
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.locationButton {
+  color: rgba($white, 0.8);
+  transition: color 0.2s;
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.locationIcon {
+  margin-right: 0.25rem;
+}
+
+.locationText {
+  color: inherit;
+}
+
+.profileButton {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background-color: rgba($white, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: rgba($white, 0.2);
+  }
+}
+
+.userIcon {
+  color: $white;
+}
+
+// 内容容器
+.contentContainer {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+}
+
+// 通用区块样式
+.section {
+  margin-bottom: 2.5rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: $white;
+}
+
+.viewAllLink {
+  color: $primary;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+
+  &:hover {
+    color: $darkBlue;
+  }
+}
+
+.chevronIcon {
+  margin-left: 0.25rem;
+  font-size: 0.75rem;
+}
+
+// 推荐景区
+.attractionGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.attractionCard {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: $white;
+  border: 1px solid $gray-200;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    transform: scale(1.02);
+  }
+}
+
+.cardImageContainer {
+  position: relative;
+  height: 12rem;
+  overflow: hidden;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+
+  .attractionCard:hover & {
+    transform: scale(1.1);
+  }
+}
+
+.hotTag {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  background-color: rgba($primary, 0.9);
+  color: $white;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.cardContent {
+  padding: 1rem;
+}
+
+.cardTitle {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: $white;
+  margin-bottom: 0.25rem;
+}
+
+.ratingContainer {
+  display: flex;
+  align-items: center;
+  color: $yellow;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.starIcon {
+  margin-right: 0.125rem;
+}
+
+.ratingText {
+  color: $gray-400;
+  margin-left: 0.25rem;
+}
+
+.cardDescription {
+  color: $gray-400;
+  font-size: 0.875rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.guideText {
+  color: $primary;
+  font-weight: 500;
+}
+
+.arrowButton {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  background-color: rgba($white, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: $primary;
+  }
+}
+
+.arrowIcon {
+  color: $white;
+  font-size: 0.75rem;
+}
+
+// 最新资讯
+.newsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.newsCard {
+  display: flex;
+  background-color: $white;
+  border: 1px solid $gray-200;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.newsImageContainer {
+  width: 33.333%;
+}
+
+.newsImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.newsContent {
+  width: 66.667%;
+  padding: 1rem;
+}
+
+.newsTag {
+  font-size: 0.75rem;
+  color: $primary;
+  background-color: rgba($primary, 0.1);
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+.accentTag {
+  color: $accent;
+  background-color: rgba($accent, 0.1);
+}
+
+.newsTitle {
+  font-weight: 500;
+  color: $white;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.newsMeta {
+  color: $gray-400;
+  font-size: 0.75rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 相关文章
+.articleList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.articleItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: $white;
+  border: 1px solid $gray-200;
+  transition: all 0.2s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $gray-500;
+  }
+}
+
+.articleIconContainer {
+  display: flex;
+  align-items: center;
+}
+
+.articleIconPrimary {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.5rem;
+  background-color: rgba($primary, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+}
+
+.articleIconSecondary {
+  @extend .articleIconPrimary;
+  background-color: rgba($secondary, 0.2);
+}
+
+.articleIconAccent {
+  @extend .articleIconPrimary;
+  background-color: rgba($accent, 0.2);
+}
+
+.articleIcon {
+  color: $primary;
+  font-size: 1rem;
+}
+
+.articleIconSecondary .articleIcon {
+  color: $secondary;
+}
+
+.articleIconAccent .articleIcon {
+  color: $accent;
+}
+
+.articleContent {
+  flex: 1;
+}
+
+.articleTitle {
+  font-weight: 500;
+  color: $white;
+  font-size: 0.875rem;
+}
+
+.articleMeta {
+  color: $gray-400;
+  font-size: 0.75rem;
+}
+
+.articleChevron {
+  color: $gray-500;
+}
