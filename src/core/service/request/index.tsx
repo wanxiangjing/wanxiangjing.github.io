@@ -101,4 +101,5 @@ class ApiClient {
 }
 
 // 创建API客户端实例
-export const apiClient = new ApiClient("https://api.aibanyou.top/api/v1/usr/");
+// export const apiClient = new ApiClient("https://api.aibanyou.top/api/v1/usr/");
+export const apiClient = new ApiClient("http://1.94.253.218:8888/api/v1/usr/");

@@ -9,22 +9,23 @@ const Room = lazy(() => import("@/pages/Room"));
 const Preload = lazy(() => import("@/pages/Preload"));
 const Login = lazy(() => import("@/pages/Login"));
 const Profile = lazy(() => import("@/pages/Profile"));
+const Map = lazy(() => import("@/pages/Map"))
 
-const RouterSuspense=({children}:{children:React.ReactNode})=>{
-    return (
-        <Suspense fallback={<RouterLoading />}>
-            {children}
-        </Suspense>
-    )
+const RouterSuspense = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <Suspense fallback={<RouterLoading />}>
+      {children}
+    </Suspense>
+  )
 }
 
 const router = createHashRouter([
   {
     path: "/",
     element: (
-        <RouterSuspense>
-            <Layout />
-        </RouterSuspense>
+      <RouterSuspense>
+        <Layout />
+      </RouterSuspense>
     ),
     children: [
       {
@@ -51,7 +52,7 @@ const router = createHashRouter([
           </RouterSuspense>
         ),
       },
-      
+
     ],
   },
   {
@@ -67,6 +68,15 @@ const router = createHashRouter([
     element: (
       <RouterSuspense>
         <Preload />
+      </RouterSuspense>
+    ),
+  },
+  
+  {
+    path: "/map",
+    element: (
+      <RouterSuspense>
+        <Map />
       </RouterSuspense>
     ),
   },
