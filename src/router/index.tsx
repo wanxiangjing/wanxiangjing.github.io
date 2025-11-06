@@ -3,7 +3,7 @@ import { lazy, Suspense } from "react";
 import RouterLoading from "@/components/Loading/RouterLoading"; // 你的 Loading 组件
 
 const Layout = lazy(() => import("@/Layout"));
-const MainTourGuide = lazy(() => import("@/pages/MainTourGuide"));
+const HomePage = lazy(() => import("@/pages/HomePage"));
 const PermissionPage = lazy(() => import("@/pages/PermissionPage"));
 const Room = lazy(() => import("@/pages/Room"));
 const Preload = lazy(() => import("@/pages/Preload"));
@@ -32,15 +32,7 @@ const router = createHashRouter([
         index: true,
         element: (
           <RouterSuspense>
-            <MainTourGuide />
-          </RouterSuspense>
-        ),
-      },
-      {
-        path: "/permission",
-        element: (
-          <RouterSuspense>
-            <PermissionPage />
+            <HomePage />
           </RouterSuspense>
         ),
       },
@@ -54,6 +46,14 @@ const router = createHashRouter([
       },
 
     ],
+  },
+  {
+    path: "/permission",
+    element: (
+      <RouterSuspense>
+        <PermissionPage />
+      </RouterSuspense>
+    ),
   },
   {
     path: "/room",
@@ -71,7 +71,7 @@ const router = createHashRouter([
       </RouterSuspense>
     ),
   },
-  
+
   {
     path: "/map",
     element: (

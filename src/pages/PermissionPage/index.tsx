@@ -6,7 +6,7 @@ import { Toast } from 'antd-mobile';
 import { AudioOutline, CameraOutline, CheckOutline } from 'antd-mobile-icons';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import styles from './index.module.scss';
 
 const PermissionPage = () => {
@@ -15,6 +15,9 @@ const PermissionPage = () => {
     const RtcClient = useSelector((state: RootState) => state.rtcClient.RtcClient);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const searchParams = useSearchParams()[0];
+    const attractionName = searchParams.get('attractionName') || '';
+    const attractionaAddress = searchParams.get('attractionAddress') || '';
 
 
     const handleRequestPermissions = () => {
@@ -26,14 +29,14 @@ const PermissionPage = () => {
                 dispatch(updateCameraPermission(true));
                 dispatch(updateMicrophonePermission(true));
                 setTimeout(() => {
-                    navigate('/room');
+                    navigate('/room?attractionName=' + attractionName + '&attractionAddress=' + attractionaAddress);
                 }, 1000)
             })
             .catch(() => {
                 Toast.show({
                     icon: 'error',
                     content: '权限请求失败,请重试'
-                })
+                }) 
                 dispatch(updateCameraPermission(false));
                 dispatch(updateMicrophonePermission(false));
             });

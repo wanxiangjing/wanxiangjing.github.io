@@ -47,14 +47,12 @@ $darkBlue: #2563eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.backButton {
-  color: rgba(255, 255, 255, 0.8);
-  transition: color 0.2s;
-
-  &:hover {
-    color: white;
+  .backButton{
+    width: 80px;
+    color: #fff;
+  }
+  .spacer{
+    width: 80px;
   }
 }
 
@@ -66,10 +64,6 @@ $darkBlue: #2563eb;
   font-size: 1.25rem;
   font-weight: bold;
   color: white;
-}
-
-.spacer {
-  width: 2.5rem;
 }
 
 // 个人信息
@@ -88,36 +82,40 @@ $darkBlue: #2563eb;
 
 .avatarContainer {
   position: relative;
+  overflow: hidden;
+  border-radius: 50%;
   width: 6rem;
   height: 6rem;
-  margin-bottom: 1rem;
+  box-shadow: 0 0 0 2px $primary;
 }
 
 .avatar {
-  width: 100%;
-  height: 100%;
-  border-radius: 9999px;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
   object-fit: cover;
-  border: 2px solid $primary;
+  overflow: hidden;
 }
 
 .avatarEdit {
   position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 9999px;
-  background-color: $primary;
+  bottom: -6rem;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  // 半透明磨砂
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  border: 2px solid $gray-900;
 }
 
 .cameraIcon {
-  color: white;
-  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.2rem;
+  margin-top: 0.25rem;
 }
 
 .userName {
@@ -260,4 +258,13 @@ $darkBlue: #2563eb;
 
 .chevronIcon {
   color: $gray-500;
+}
+
+.avatarPopup{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 5rem;
+  gap: 1rem;
+  height: 40%;
 }

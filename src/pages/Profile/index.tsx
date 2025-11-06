@@ -1,16 +1,46 @@
+import { Button, ImageUploader, Popup, Space, Toast } from 'antd-mobile';
 import styles from './index.module.scss';
+import { CameraOutline, LeftOutline, UploadOutline } from 'antd-mobile-icons';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import { url } from 'inspector';
+import { fileUpload } from '@/api/common';
+import { useState } from 'react';
+import { Upload } from 'antd';
+import { RcFile } from 'antd/es/upload';
+import { apiUpdateAvatar } from '@/api/user';
+import { updateUser } from '@/store/slices/user';
 
 const ProfilePage = () => {
+
+  const { user, isLogin } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+  const [avatarSetOpen, setAvatarSetOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string>(user.avatar || "https://design.gemcoder.com/staticResource/echoAiSystemImages/494dd717c802938aad7d546b1678a1cd.png");
+
+  const handleUploadAvatar = async (file: RcFile) => {
+    // 处理上传头像逻辑
+    const res = await fileUpload(file);
+    Toast.show({ content: '头像上传成功！', duration: 2000, icon: 'success' });
+    console.log(res);
+    setAvatarUrl(`http://${location.hostname}:8888${res.url}`);
+    return false; // 阻止 Upload 组件自动上传
+  }
+  const handleConfirmAvatar = () => {
+    apiUpdateAvatar(avatarUrl).then(res => {
+      Toast.show({ content: '头像更新成功！', duration: 2000, icon: 'success' });
+      dispatch(updateUser({ ...user, avatar: avatarUrl }));
+      setAvatarSetOpen(false);
+    })
+  }
+
   return (
     <div className={styles.profilePage} id="profile-page">
       <div className={styles.profileContainer}>
         {/* 顶部导航栏 */}
         <div className={styles.topNav}>
           <div className={styles.navContent}>
-            <button className={styles.backButton} id="back-to-home">
-              <i className={`fas fa-arrow-left ${styles.icon}`}></i>
-              返回
-            </button>
+            <Button className={styles.backButton} fill='none' size='small'><LeftOutline /> 返回</Button>
             <h1 className={styles.title}>个人中心</h1>
             <div className={styles.spacer}></div>
           </div>
@@ -19,21 +49,27 @@ const ProfilePage = () => {
         {/* 个人信息 */}
         <div className={styles.profileContent}>
           <div className={styles.userInfo}>
-            <div className={styles.avatarContainer}>
+            <div className={styles.avatarContainer} onClick={() => setAvatarSetOpen(true)}>
               <img
                 alt="用户头像"
                 className={styles.avatar}
-                src="https://design.gemcoder.com/staticResource/echoAiSystemImages/494dd717c802938aad7d546b1678a1cd.png"
+                src={user.avatar || "https://design.gemcoder.com/staticResource/echoAiSystemImages/494dd717c802938aad7d546b1678a1cd.png"}
               />
               <div className={styles.avatarEdit}>
-                <i className={`fas fa-camera ${styles.cameraIcon}`}></i>
+                <CameraOutline className={styles.cameraIcon} />
               </div>
             </div>
-            <h2 className={styles.userName} id="user-name">游客</h2>
-            <p className={styles.loginStatus} id="login-status">未登录</p>
-            <button className={styles.loginButton} id="go-to-login">
-              登录/注册
-            </button>
+            {
+              isLogin ? <h2 className={styles.userName} id="user-name">{user.username || "游客"}</h2>
+                : <>
+                  <p className={styles.loginStatus} id="login-status">未登录</p>
+                  <button className={styles.loginButton} id="go-to-login">
+                    登录/注册
+                  </button>
+                </>
+
+            }
+
           </div>
 
           {/* 我的足迹 */}
@@ -94,6 +130,20 @@ const ProfilePage = () => {
           </section>
         </div>
       </div>
+      <Popup visible={avatarSetOpen} onMaskClick={() => setAvatarSetOpen(false)} onClose={() => setAvatarSetOpen(false)} position='bottom' bodyStyle={{ borderTopLeftRadius: '16px', borderTopRightRadius: '16px' }} bodyClassName={styles.avatarPopup}>
+        <div className={styles.avatarContainer}>
+          <img
+            alt="用户头像"
+            className={styles.avatar}
+            src={avatarUrl}
+          />
+        </div>
+        <Upload fileList={[]} beforeUpload={handleUploadAvatar} showUploadList={false} >
+          <Button block style={{ width: '200px', flex: 1 }} size='middle'><UploadOutline /> 上传头像</Button>
+        </Upload>
+        {/* <Button style={{width: '80px'}} block size='middle'  onClick={() => setAvatarSetOpen(false)}>取消</Button> */}
+        <Button style={{ width: '200px' }} block size='middle' color='primary' onClick={handleConfirmAvatar}>确认</Button>
+      </Popup>
     </div>
   );
 };

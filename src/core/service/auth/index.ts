@@ -3,6 +3,7 @@ import store from "@/store";
 import { updateLoginStatus, updateUser } from "@/store/slices/user";
 import { ILoginParams, ILoginResult, IRegisterParams } from "@/types/auth";
 import { isNotEmpty } from "@/utils/utils";
+import reactCookies from 'react-cookies'
 
 // 前端代码示例
 class AuthClient {
@@ -10,16 +11,18 @@ class AuthClient {
     private refreshToken: string | null;
     constructor() {
         this.accessToken = null;
-        this.refreshToken = localStorage.getItem('refreshToken');
+        this.refreshToken = reactCookies.load('refreshToken');
+        console.log('refreshToken', this.refreshToken);
         if (this.refreshToken) {
             setTimeout(() => {
                 this.refreshAccessToken().then(() => {
                     this.getUserInfo().then((res) => {
                         store.dispatch(updateUser(res));
+                        store.dispatch(updateLoginStatus({ isLogin: true }));
                     });
                 });
             }, 0);
-        }else{
+        } else {
             window.location.href = '/#/login';
         }
     }
@@ -44,7 +47,13 @@ class AuthClient {
     private afterLogin(res: ILoginResult) {
         this.accessToken = res.access_token;
         this.refreshToken = res.refresh_token;
-        localStorage.setItem('refreshToken', res.refresh_token);
+        reactCookies.save('refreshToken', res.refresh_token, {
+            path: '/',// 路径
+            // httpOnly: true,// 仅服务器端可访问
+            secure: true,// 仅通过HTTPS传输
+            sameSite: 'strict',// 同站请求携带Cookie
+            maxAge: 7 * 24 * 60 * 60 // 7天
+        });
         store.dispatch(updateUser(res.user));
         store.dispatch(updateLoginStatus({ isLogin: true }));
         return res;
@@ -75,7 +84,12 @@ class AuthClient {
     logout() {
         this.accessToken = null;
         this.refreshToken = null;
-        localStorage.removeItem('refreshToken');
+        reactCookies.remove('refreshToken', {
+            path: '/',
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict',
+        });
     }
 }
 export const authClient = new AuthClient();

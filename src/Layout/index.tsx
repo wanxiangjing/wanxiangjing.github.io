@@ -6,6 +6,7 @@ import styles from './index.module.scss'
 import roomIcon from '@/assets/img/logo.png'
 import { RootState } from "@/store"
 import { useSelector } from "react-redux"
+import positionService from "@/core/service/position"
 
 
 const tabs = [
@@ -47,6 +48,12 @@ const Layout = () => {
             navigate(`/preload?redirect=${redirect || '/'}`)
         }
     }, [hasPreload])
+
+    useEffect(() => {
+        positionService.initMap();
+    }, []);
+
+
 
     return (
         <div className={styles.layout}>

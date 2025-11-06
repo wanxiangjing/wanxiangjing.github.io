@@ -19,6 +19,8 @@ class ApiClient {
     // 请求拦截器
     this.client.interceptors.request.use(
       (config) => {
+        console.log('请求拦截器', config);
+        
         const token = authClient.getAccessToken();
         if (token) {
           config.headers.Authorization = `Bearer ${token}`;
@@ -80,26 +82,27 @@ class ApiClient {
   }
 
   // GET请求
-  public async get<T>(url: string, params?: any): Promise<T> {
-    return this.request<T>({ method: 'GET', url, params });
+  public async get<T>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.request<T>({ method: 'GET', url, params, ...config });
   }
 
   // POST请求
-  public async post<T>(url: string, data?: any): Promise<T> {
-    return this.request<T>({ method: 'POST', url, data });
+  public async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.request<T>({ method: 'POST', url, data, ...config });
   }
 
   // PUT请求
-  public async put<T>(url: string, data?: any): Promise<T> {
-    return this.request<T>({ method: 'PUT', url, data });
+  public async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.request<T>({ method: 'PUT', url, data, ...config });
   }
 
   // DELETE请求
-  public async delete<T>(url: string, params?: any): Promise<T> {
-    return this.request<T>({ method: 'DELETE', url, params });
+  public async delete<T>(url: string, params?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.request<T>({ method: 'DELETE', url, params, ...config });
   }
 }
 
 // 创建API客户端实例
 // export const apiClient = new ApiClient("https://api.aibanyou.top/api/v1/usr/");
-export const apiClient = new ApiClient("http://1.94.253.218:8888/api/v1/usr/");
+// export const apiClient = new ApiClient("http://1.94.253.218:8888/api/v1/usr/");
+export const apiClient = new ApiClient("http://172.16.203.47:8888/api/v1/usr/");

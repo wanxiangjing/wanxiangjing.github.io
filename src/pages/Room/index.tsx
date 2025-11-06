@@ -9,7 +9,7 @@ import store, { RootState } from '@/store';
 import { RTCConfig, SceneConfig, updateFullScreen, updateRTCConfig, updateScene, updateSceneConfig } from '@/store/slices/room';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import Conversation from './components/Conversation';
 import LoadingMask from './components/LoadingMask';
 import ToolBar from './components/Toolbar';
@@ -23,6 +23,9 @@ function Room() {
   const { hasPreload, cameraPermission, microphonePermission } = useSelector((state: RootState) => state.global);
   const navigate = useNavigate();
   const leaveRoom = useLeave()
+  const [searchParams] = useSearchParams();
+  const attractionaAddress = searchParams.get('attractionaAddress');
+  const attractionName = searchParams.get('attractionName');
   const {
     isVideoPublished,
   } = useDeviceState();
@@ -62,8 +65,12 @@ function Room() {
   }, [])
 
   useEffect(() => {
+    console.log(attractionName, attractionaAddress);
+    
     if (!cameraPermission || !microphonePermission) {
-      navigate('/permission');
+      const pUrl='/permission?attractionName=' + attractionName + '&attractionAddress=' + attractionaAddress;
+      console.log(pUrl);
+      navigate(pUrl);
     }
     return () => {
       console.log('退出讲解')

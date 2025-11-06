@@ -1,6 +1,22 @@
+import logoImg from '@/assets/img/logo.png';
+import { RootState } from '@/store';
+import { Avatar, Button, Input, SearchBar, SpinLoading, Swiper } from 'antd-mobile';
+import { EnvironmentOutline, RightOutline, StarOutline } from 'antd-mobile-icons';
+import { useSelector } from 'react-redux';
 import styles from './index.module.scss';
+import { useNavigate } from 'react-router';
 
-const MainTourGuide = () => {
+const HomePage = () => {
+  const { myPosition, poiList, isLocated } = useSelector((state: RootState) => state.position);
+  const { user, isLogin } = useSelector((state: RootState) => state.user);
+  const pois = poiList?.pois || [];
+
+  const navigate = useNavigate();
+
+  const handleEnterAIGuide = (name: string, address: string) => {
+    navigate('/room?attractionaAddress=' + (address || '') + '&attractionName=' + (name || ''));
+  }
+
   return (
     <div className={styles.homePage} id="home-page">
       <div className={styles.homeContainer}>
@@ -8,23 +24,89 @@ const MainTourGuide = () => {
         <div className={styles.topNav}>
           <div className={styles.navContent}>
             <div className={styles.logoContainer}>
-              <div className={styles.logoIcon}>
-                <i className={`fas fa-eye ${styles.eyeIcon}`}></i>
-              </div>
+              <img className={styles.logoIcon} src={logoImg} alt="logo" />
               <h1 className={styles.logoText}>万象镜</h1>
             </div>
             <div className={styles.navActions}>
-              <button className={styles.locationButton} id="location-btn">
-                <i className={`fas fa-map-marker-alt ${styles.locationIcon}`}></i>
-                <span className={styles.locationText} id="current-location">定位中...</span>
-              </button>
-              <button className={styles.profileButton} id="user-profile-btn">
-                <i className={`fas fa-user ${styles.userIcon}`}></i>
-              </button>
+              <EnvironmentOutline />
+              {
+                isLocated ? <span className={styles.locationText} id="current-location">{myPosition?.formattedAddress || <SpinLoading style={{ '--size': '16px' }} />}</span> : <span className={styles.locationText} id="current-location">定位失败</span>
+              }
+              {isLogin ? <Avatar className={styles.avatar} src={user.avatar || ''} alt={user.username || ''} /> : <span>登录</span>}
             </div>
           </div>
         </div>
 
+        <div className={styles.contentContainer}>
+          {/* 搜索 */}
+          <section className={styles.section}>
+            <SearchBar placeholder="搜索景点" />
+          </section>
+          {/* 推荐景区 */}
+          <section className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>附近景点</h2>
+              <a className={styles.viewAllLink} href="javascript:void(0);">
+                查看更多
+                <i className={`fas fa-chevron-right ${styles.chevronIcon}`}></i>
+              </a>
+            </div>
+            <div className={styles.attractionGrid}>
+              {
+                pois.map((poi) => {
+                  return (<div className={styles.attractionCard} key={poi.id} id={`attraction-card-${poi.id}`}>
+                    <div className={styles.cardImageContainer}>
+                      <Swiper
+                        loop
+                        autoplay
+
+                        onIndexChange={i => {
+                          console.log(i, 'onIndexChange1')
+                        }}
+                      >
+                        {poi.photos && poi.photos?.map((photo) => (
+                          <Swiper.Item key={photo.url}>
+                            <img
+                              alt={poi.name}
+                              className={styles.cardImage}
+                              src={photo.url || ''}
+                              key={photo.url}
+                            />
+                          </Swiper.Item>
+                        ))}
+                      </Swiper>
+                      <div className={styles.hotTag}>附近</div>
+                    </div>
+                    <div className={styles.cardContent}>
+                      <div className={styles.titleRow}>
+                        <h3 className={styles.cardTitle}>{poi.name} </h3>
+                        {/* 距离 */}
+                        {
+                          poi.distance && <p className={styles.cardDescription}>
+                            距离您 {poi.distance} m
+                          </p>
+                        }
+                      </div>
+                      <div className={styles.ratingContainer}>
+                        <StarOutline />
+                        <span className={styles.ratingText}> {poi.rating || '暂无评分'} </span>
+                      </div>
+                      <p className={styles.cardDescription}>
+                        {poi.address || '暂无描述信息'}
+                      </p>
+                      <div className={styles.cardFooter}>
+                        <Button color="primary" size='small' onClick={() => handleEnterAIGuide(poi.name || '', poi.address || '')} >
+                          AI智能导览 <RightOutline />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                  );
+                })
+              }
+            </div>
+          </section>
+        </div>
         {/* 首页内容 */}
         <div className={styles.contentContainer}>
           {/* 推荐景区 */}
@@ -32,7 +114,7 @@ const MainTourGuide = () => {
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>推荐景区</h2>
               <a className={styles.viewAllLink} href="javascript:void(0);">
-                查看全部
+                查看更多
                 <i className={`fas fa-chevron-right ${styles.chevronIcon}`}></i>
               </a>
             </div>
@@ -246,4 +328,4 @@ const MainTourGuide = () => {
   );
 };
 
-export default MainTourGuide;
+export default HomePage;

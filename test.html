@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>当前位置与附近景点</title>
+    <!-- 引入高德地图JSAPI -->
+    <script src="https://webapi.amap.com/maps?v=2.0&key=96e012b47df6a5aedc4163395621d90d"></script>
+    <!-- 引入高德地图UI库（用于提供更友好的控件，可选） -->
+    <script src="https://webapi.amap.com/ui/1.1/main.js"></script>
+    <style>
+        #container {
+            width: 100%;
+            height: 600px;
+        }
+
+        #info-panel {
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 地图显示容器 -->
+    <div id="container"></div>
+    <!-- 信息展示面板 -->
+    <div id="info-panel"></div>
+
+    <script>
+        // 初始化地图
+        var map = new AMap.Map('container', {
+            resizeEnable: true, // 支持窗口缩放
+            zoom: 13 // 初始缩放级别
+            // 初始中心点可以随意设置，定位成功后会移动过去
+        });
+
+        map.plugin('AMap.Geolocation', function () {
+            var geolocation = new AMap.Geolocation({
+                enableHighAccuracy: true,
+                timeout: 10000,
+                buttonPosition: 'RB'
+            });
+            map.addControl(geolocation);
+            geolocation.getCurrentPosition();
+
+            // 新版事件监听（使用 on 替代 addListener）
+            geolocation.on('complete', function (data) {
+                console.log('定位成功！', data);
+                var lng = data.position.lng;
+                var lat = data.position.lat;
+                var address = data.formattedAddress;
+                document.getElementById('info-panel').innerHTML = `<p>您位于：${address}</p>`;
+
+                // 搜索附近景点
+                searchNearbyPois(lng, lat);
+            });
+
+            geolocation.on('error', function (err) {
+                console.error('定位失败：', err);
+                document.getElementById('info-panel').innerHTML = `<p style="color:red;">定位失败：${err.message || err.info}</p>`;
+            });
+        });
+        // 搜索周边POI（景点）的函数
+        function searchNearbyPois(lng, lat) {
+            // 加载PlaceSearch插件
+            map.plugin(["AMap.PlaceSearch"], function () {
+                // 创建周边搜索实例
+                // 使用 `types` 参数指定搜索类型，'风景名胜' 对应景点
+                var placeSearch = new AMap.PlaceSearch({
+                    type: '风景名胜', // POI类型，可根据高德POI分类码表修改
+                    pageSize: 10, // 单页显示结果数
+                    pageIndex: 1,
+                    citylimit: false,
+                    map: map, // 结果展示在地图上
+                    panel: "info-panel" // 结果列表展现在指定的id元素中（可选）
+                });
+
+                // 根据经纬度进行周边搜索
+                placeSearch.searchNearBy('', [lng, lat], 2000, function (status, result) {
+                    // 回调函数，处理搜索结果
+                    if (status === 'complete' && result.info === 'OK') {
+                        console.log('周边景点搜索成功：', result);
+                        // 结果会自动显示在指定的panel容器中
+                        // 你也可以在这里自定义处理结果，例如用自定义样式展示
+                        var poiList = result.poiList.pois;
+                        var htmlContent = "<h3>附近景点：</h3><ul>";
+                        for (var i = 0; i < poiList.length; i++) {
+                            var poi = poiList[i];
+                            htmlContent += `<li><strong>${poi.name}</strong> - 地址：${poi.address} <br> 类型：${poi.type} | 距离：约${(poi.distance)}米</li>`;
+                        }
+                        htmlContent += "</ul>";
+                        document.getElementById("info-panel").innerHTML += htmlContent;
+                    } else {
+                        console.error('周边景点搜索失败：', result);
+                        document.getElementById("info-panel").innerHTML += "<p>搜索附近景点失败。</p>";
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+
+</html>
