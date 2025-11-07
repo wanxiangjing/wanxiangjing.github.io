@@ -10,6 +10,7 @@ import { Upload } from 'antd';
 import { RcFile } from 'antd/es/upload';
 import { apiUpdateAvatar } from '@/api/user';
 import { updateUser } from '@/store/slices/user';
+import { backendURL } from '@/core/service/request';
 
 const ProfilePage = () => {
 
@@ -23,7 +24,7 @@ const ProfilePage = () => {
     const res = await fileUpload(file);
     Toast.show({ content: '头像上传成功！', duration: 2000, icon: 'success' });
     console.log(res);
-    setAvatarUrl(`http://${location.hostname}:8888${res.url}`);
+    setAvatarUrl(`${backendURL}${res.url}`);
     return false; // 阻止 Upload 组件自动上传
   }
   const handleConfirmAvatar = () => {

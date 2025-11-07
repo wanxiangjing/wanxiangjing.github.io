@@ -1,6 +1,7 @@
 import { createHashRouter } from "react-router-dom";
 import { lazy, Suspense } from "react";
 import RouterLoading from "@/components/Loading/RouterLoading"; // 你的 Loading 组件
+import Loading1 from "@/components/loadings/Loading1";
 
 const Layout = lazy(() => import("@/Layout"));
 const HomePage = lazy(() => import("@/pages/HomePage"));
@@ -13,7 +14,7 @@ const Map = lazy(() => import("@/pages/Map"))
 
 const RouterSuspense = ({ children }: { children: React.ReactNode }) => {
   return (
-    <Suspense fallback={<RouterLoading />}>
+    <Suspense fallback={<Loading1 />}>
       {children}
     </Suspense>
   )

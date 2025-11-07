@@ -8,6 +8,7 @@ import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router';
 import styles from './index.module.scss';
+import Loading1 from '@/components/loadings/Loading1';
 
 const PermissionPage = () => {
     const connectorRef = useRef<HTMLDivElement>(null);
@@ -36,7 +37,7 @@ const PermissionPage = () => {
                 Toast.show({
                     icon: 'error',
                     content: '权限请求失败,请重试'
-                }) 
+                })
                 dispatch(updateCameraPermission(false));
                 dispatch(updateMicrophonePermission(false));
             });

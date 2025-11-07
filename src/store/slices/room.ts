@@ -15,9 +15,9 @@ export interface Msg {
   value: string;
   time: string;
   user: string;
-  paragraph?: boolean;
-  definite?: boolean;
-  isInterrupted?: boolean;
+  paragraph?: boolean; // 是否是段落
+  definite?: boolean; // 是否能被定义为 "问题"
+  isInterrupted?: boolean; // 是否被中断
 }
 
 export interface SceneConfig {

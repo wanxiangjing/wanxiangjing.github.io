@@ -12,6 +12,8 @@ import { Tag } from 'antd-mobile';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './index.module.scss';
+import useSendToRtc from '@/utils/hooks/useSendToRtc';
+import { useSearchParams } from 'react-router';
 
 
 function Conversation() {
@@ -29,6 +31,12 @@ function Conversation() {
   const dispatch = useDispatch();
   const lastAIMsg = msgHistory.findLast((msg) => msg.user.startsWith('Chat'));
   const lastUserMsg = msgHistory.findLast((msg) => !!!msg.user.startsWith('Chat'));
+  const isWelcomeMessageFinished = msgHistory.length === 1 && msgHistory[0].definite;
+  const { sendToLLM } = useSendToRtc()
+
+  const [searchParams] = useSearchParams();
+  const attractionaAddress = searchParams.get('attractionaAddress');
+  const attractionName = searchParams.get('attractionName');
 
   const handleDisplay = () => {
     dispatch(updateDisplaySubtitleByTimer(true))
@@ -53,6 +61,13 @@ function Conversation() {
       container.scrollTop = container.scrollHeight - container.clientHeight;
     }
   }, [msgHistory.length]);
+
+  useEffect(() => {
+    if (isWelcomeMessageFinished && attractionaAddress && attractionName) {
+      sendToLLM(`当前位置在${attractionaAddress}, 景点名称是${attractionName}`); // 发送空消息以触发后续对话
+    }
+  }, [isWelcomeMessageFinished, attractionaAddress, attractionName])
+
 
   useEffect(() => {
     handleDisplay()

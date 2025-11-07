@@ -4,6 +4,10 @@ import { ApiResponse } from './types';
 import { authClient } from '../auth';
 import { Toast } from 'antd-mobile';
 
+export const backendURL = "https://api.aibanyou.top"; // 后端服务地址
+//  export const backendURL = "http://1.94.253.218:8888"; // 后端服务地址
+//  export const backendURL = "http://172.16.203.47:8888"; // 后端服务地址
+
 class ApiClient {
   private client: AxiosInstance;
 
@@ -103,6 +107,4 @@ class ApiClient {
 }
 
 // 创建API客户端实例
-// export const apiClient = new ApiClient("https://api.aibanyou.top/api/v1/usr/");
-// export const apiClient = new ApiClient("http://1.94.253.218:8888/api/v1/usr/");
-export const apiClient = new ApiClient("http://172.16.203.47:8888/api/v1/usr/");
+export const apiClient = new ApiClient(`${backendURL}/api/v1/usr/`);
