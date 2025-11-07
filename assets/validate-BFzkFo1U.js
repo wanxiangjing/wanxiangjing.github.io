@@ -1,0 +1,1 @@
+import{b as t}from"./with-default-props-C6j6VXQe.js";function i(e){return!!e&&typeof e=="object"&&typeof e.then=="function"}function n(){return t?/ios|iphone|ipad|ipod/.test(navigator.userAgent.toLowerCase()):!1}export{i as a,n as i};
